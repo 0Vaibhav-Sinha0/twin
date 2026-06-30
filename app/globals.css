@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+:root {
+  /* Night / Magic mode — cinematic, electric, used for intro, cake, garden, constellation */
+  --night-void: #05070f;
+  --night-indigo: #0b1230;
+  --night-indigo-soft: #131c44;
+  --night-electric: #3aa9ff;
+  --night-violet: #9f7aea;
+  --night-glow: #e8f4ff;
+
+  /* Day / Cozy mode — warm, hand-penned, used for journal, letters, gallery */
+  --day-parchment: #fbf6ec;
+  --day-paper-aged: #f0e4d0;
+  --day-ink: #7a5c3e;
+  --day-terracotta: #c9886b;
+  --day-sage: #4a6b5a;
+
+  --background: var(--day-parchment);
+  --foreground: var(--day-ink);
+}
+
+@theme inline {
+  --color-night-void: var(--night-void);
+  --color-night-indigo: var(--night-indigo);
+  --color-night-indigo-soft: var(--night-indigo-soft);
+  --color-night-electric: var(--night-electric);
+  --color-night-violet: var(--night-violet);
+  --color-night-glow: var(--night-glow);
+
+  --color-day-parchment: var(--day-parchment);
+  --color-day-paper-aged: var(--day-paper-aged);
+  --color-day-ink: var(--day-ink);
+  --color-day-terracotta: var(--day-terracotta);
+  --color-day-sage: var(--day-sage);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-hand: var(--font-hand);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body), serif;
+}
+
+/* Night mode override — applied via class on a section/page wrapper, not prefers-color-scheme,
+   since the two modes are an intentional narrative device, not a system preference. */
+.mode-night {
+  --background: var(--night-void);
+  --foreground: var(--night-glow);
+}
+
+::selection {
+  background: var(--day-terracotta);
+  color: var(--day-parchment);
+}
+
+.mode-night ::selection {
+  background: var(--night-electric);
+  color: var(--night-void);
+}
