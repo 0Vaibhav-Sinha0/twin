@@ -7,19 +7,19 @@ export default function Root() {
   const router = useRouter();
 
   useEffect(() => {
-    const played = sessionStorage.getItem("twin_intro_played");
-    if (played) {
-      router.replace("/home");
-    } else {
+    const unlocked = sessionStorage.getItem("twin_unlocked");
+    const introPlayed = sessionStorage.getItem("twin_intro_played");
+
+    if (!unlocked) {
+      router.replace("/password");
+    } else if (!introPlayed) {
       router.replace("/intro");
+    } else {
+      router.replace("/home");
     }
   }, [router]);
 
-  // Render nothing while redirecting — void background matches intro start
   return (
-    <div
-      className="fixed inset-0"
-      style={{ backgroundColor: "#05070f" }}
-    />
+    <div className="fixed inset-0" style={{ backgroundColor: "#05070f" }} />
   );
 }
