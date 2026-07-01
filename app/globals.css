@@ -64,3 +64,25 @@ body {
   background: var(--night-electric);
   color: var(--night-void);
 }
+
+/* ── Scrollbar ─────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(58,169,255,0.2); border-radius: 2px; }
+
+/* ── Bottom dock clearance — pages need padding so content isn't hidden behind dock ── */
+.has-dock {
+  padding-bottom: 96px;
+}
+
+/* ── Dock tooltip ──────────────────────────────────────────────────── */
+.dock-label {
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+.dock-item:hover .dock-label {
+  opacity: 1;
+  transform: translateY(0);
+}
