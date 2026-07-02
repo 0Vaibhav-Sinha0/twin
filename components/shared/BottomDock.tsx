@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { getStars } from "@/lib/stars";
 
 const NAV_ITEMS = [
   { href: "/home",     icon: "✦",  label: "Home"     },
@@ -19,6 +21,16 @@ const NAV_ITEMS = [
 
 export default function BottomDock() {
   const pathname = usePathname();
+  const [stars, setStars] = useState(0);
+
+  useEffect(() => {
+    setStars(getStars());
+    const handler = (e: Event) => {
+      setStars((e as CustomEvent<number>).detail);
+    };
+    window.addEventListener("stars-updated", handler);
+    return () => window.removeEventListener("stars-updated", handler);
+  }, []);
 
   return (
     <motion.nav
@@ -59,7 +71,6 @@ export default function BottomDock() {
               }}
               aria-current={isActive ? "page" : undefined}
             >
-              {/* Icon */}
               <span
                 style={{
                   fontSize: "18px",
@@ -73,8 +84,6 @@ export default function BottomDock() {
               >
                 {item.icon}
               </span>
-
-              {/* Active dot */}
               {isActive && (
                 <motion.div
                   layoutId="dock-active-dot"
@@ -88,8 +97,6 @@ export default function BottomDock() {
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
-
-              {/* Hover label — floats above icon */}
               <span
                 className="dock-label absolute font-display text-center"
                 style={{
@@ -110,6 +117,25 @@ export default function BottomDock() {
             </Link>
           );
         })}
+
+        {/* Star counter */}
+        {stars > 0 && (
+          <div
+            className="flex items-center gap-1 ml-1 px-2 py-1 rounded-full"
+            style={{
+              background: "rgba(251,191,36,0.12)",
+              border: "1px solid rgba(251,191,36,0.25)",
+            }}
+          >
+            <span style={{ fontSize: "12px" }}>⭐</span>
+            <span
+              className="font-display"
+              style={{ fontSize: "11px", color: "#fbbf24", letterSpacing: "0.05em" }}
+            >
+              {stars}
+            </span>
+          </div>
+        )}
       </div>
     </motion.nav>
   );
