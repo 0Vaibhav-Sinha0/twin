@@ -7,16 +7,17 @@ import { useEffect, useState } from "react";
 import { getStars } from "@/lib/stars";
 
 const NAV_ITEMS = [
-  { href: "/home",     icon: "✦",  label: "Home"     },
-  { href: "/gallery",  icon: "🖼",  label: "Gallery"  },
-  { href: "/timeline", icon: "🌿",  label: "Timeline" },
-  { href: "/letters",  icon: "✉",  label: "Letters"  },
-  { href: "/chat",     icon: "💬",  label: "Chats"    },
-  { href: "/garden",   icon: "🌸",  label: "Garden"   },
-  { href: "/cake",     icon: "🎂",  label: "Cake"     },
-  { href: "/games",    icon: "🎮",  label: "Games"    },
-  { href: "/journal",  icon: "📖",  label: "Journal"  },
-  { href: "/thoughts", icon: "💭",  label: "Thoughts" },
+  { href: "/home",          icon: "✦",  label: "Home"          },
+  { href: "/gallery",       icon: "🖼",  label: "Gallery"       },
+  { href: "/timeline",      icon: "🌿",  label: "Timeline"      },
+  { href: "/letters",       icon: "✉",  label: "Letters"       },
+  { href: "/chat",          icon: "💬",  label: "Chats"         },
+  { href: "/garden",        icon: "🌸",  label: "Garden"        },
+  { href: "/cake",          icon: "🎂",  label: "Cake"          },
+  { href: "/games",         icon: "🎮",  label: "Games"         },
+  { href: "/journal",       icon: "📖",  label: "Journal"       },
+  { href: "/thoughts",      icon: "💭",  label: "Thoughts"      },
+  { href: "/constellation", icon: "🌌",  label: "Stars"         },
 ];
 
 export default function BottomDock() {
@@ -50,6 +51,8 @@ export default function BottomDock() {
           border: "1px solid rgba(58, 169, 255, 0.12)",
           boxShadow:
             "0 8px 32px rgba(0,0,0,0.4), 0 0 0 0.5px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.06)",
+          overflowX: "auto",
+          maxWidth: "95vw",
         }}
       >
         {NAV_ITEMS.map((item) => {
