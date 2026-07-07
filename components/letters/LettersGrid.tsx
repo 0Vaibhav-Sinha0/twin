@@ -8,7 +8,7 @@ export default function LettersGrid() {
   return (
     <div
       className="min-h-screen has-dock"
-      style={{ backgroundColor: "#05070f" }}
+      style={{ backgroundColor: "var(--bg-primary)" }}
     >
       {/* Ambient radial glow */}
       <div
@@ -37,7 +37,7 @@ export default function LettersGrid() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
             className="font-display text-4xl tracking-widest"
-            style={{ color: "#e8f4ff" }}
+            style={{ color: "var(--text-primary)" }}
           >
             Open When…
           </motion.h1>
@@ -53,7 +53,7 @@ export default function LettersGrid() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.45 }}
             className="font-body italic mt-3 text-base"
-            style={{ color: "rgba(232,244,255,0.4)" }}
+            style={{ color: "var(--text-muted)" }}
           >
             eleven letters. one for every feeling. tap the seal to open.
           </motion.p>

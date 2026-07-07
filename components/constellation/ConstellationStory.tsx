@@ -52,7 +52,7 @@ export default function ConstellationStory() {
           <h1
             className="font-display text-4xl tracking-widest"
             style={{
-              color: "#e8f4ff",
+              color: "var(--text-primary)",
               textShadow: "0 0 40px rgba(58,169,255,0.3)",
             }}
           >
@@ -62,7 +62,7 @@ export default function ConstellationStory() {
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             className="mt-8 font-hand text-sm"
-            style={{ color: "rgba(232,244,255,0.3)" }}
+            style={{ color: "var(--text-muted)" }}
           >
             scroll to draw the stars ↓
           </motion.p>
@@ -81,7 +81,7 @@ export default function ConstellationStory() {
               transition={{ duration: 0.5 }}
               className="max-w-sm rounded-2xl p-5 text-center"
               style={{
-                background: "rgba(2,4,12,0.75)",
+                background: "var(--bg-card)",
                 backdropFilter: "blur(16px)",
                 border: `1px solid ${CONSTELLATION_NODES[activeNodeIndex]?.color ?? "#3aa9ff"}33`,
                 boxShadow: `0 0 32px ${CONSTELLATION_NODES[activeNodeIndex]?.color ?? "#3aa9ff"}15`,
@@ -121,7 +121,7 @@ export default function ConstellationStory() {
             <div
               className="max-w-md text-center px-8 py-10 rounded-3xl"
               style={{
-                background: "rgba(2,4,12,0.88)",
+                background: "var(--bg-card)",
                 backdropFilter: "blur(24px)",
                 border: "1px solid rgba(253,230,138,0.2)",
                 boxShadow: "0 0 80px rgba(253,230,138,0.08)",

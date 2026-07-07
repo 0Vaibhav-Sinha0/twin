@@ -89,7 +89,7 @@ export default function MemoryGame() {
   return (
     <div
       className="min-h-screen has-dock flex flex-col"
-      style={{ backgroundColor: "#05070f" }}
+      style={{ backgroundColor: "var(--bg-primary)" }}
     >
       {/* Ambient glow */}
       <div
@@ -115,7 +115,7 @@ export default function MemoryGame() {
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             className="font-display text-3xl tracking-widest"
-            style={{ color: "#e8f4ff" }}
+            style={{ color: "var(--text-primary)" }}
           >
             Memory Match
           </motion.h1>
@@ -130,7 +130,7 @@ export default function MemoryGame() {
           >
             <div className="text-center max-w-xs">
               <p className="font-body italic text-base mb-2"
-                style={{ color: "rgba(232,244,255,0.5)" }}>
+                style={{ color: "var(--text-secondary)" }}>
                 Match all 8 pairs — emojis and initials.
               </p>
               <p className="font-hand text-sm"
@@ -146,7 +146,7 @@ export default function MemoryGame() {
               style={{
                 background: "linear-gradient(135deg, rgba(58,169,255,0.15), rgba(159,122,234,0.15))",
                 border: "1px solid rgba(58,169,255,0.3)",
-                color: "#e8f4ff",
+                color: "var(--text-primary)",
                 boxShadow: "0 0 24px rgba(58,169,255,0.15)",
               }}
             >
@@ -169,7 +169,7 @@ export default function MemoryGame() {
                   <span className="font-display text-xl" style={{ color: "#3aa9ff" }}>
                     {stat.value}
                   </span>
-                  <span className="font-hand text-xs" style={{ color: "rgba(232,244,255,0.3)" }}>
+                  <span className="font-hand text-xs" style={{ color: "var(--text-muted)" }}>
                     {stat.label}
                   </span>
                 </div>
@@ -217,11 +217,11 @@ export default function MemoryGame() {
 
               <div>
                 <h2 className="font-display text-2xl tracking-widest mb-1"
-                  style={{ color: "#e8f4ff" }}>
+                  style={{ color: "var(--text-primary)" }}>
                   You got it!
                 </h2>
                 <p className="font-hand text-base"
-                  style={{ color: "rgba(232,244,255,0.5)" }}>
+                  style={{ color: "var(--text-secondary)" }}>
                   {moves} moves · {formatTime(seconds)}
                 </p>
               </div>
@@ -259,7 +259,7 @@ export default function MemoryGame() {
                 style={{
                   background: "rgba(58,169,255,0.1)",
                   border: "1px solid rgba(58,169,255,0.25)",
-                  color: "#e8f4ff",
+                  color: "var(--text-primary)",
                 }}
               >
                 PLAY AGAIN

@@ -83,7 +83,7 @@ export default function EnvelopeCard({ letter, index }: EnvelopeCardProps) {
               </p>
               <p
                 className="font-display text-sm tracking-wide leading-tight"
-                style={{ color: "#e8f4ff" }}
+                style={{ color: "var(--text-primary)" }}
               >
                 {letter.shortLabel}
               </p>

@@ -13,7 +13,7 @@ export default function ChatTimeline() {
   return (
     <div
       className="min-h-screen has-dock"
-      style={{ backgroundColor: "#05070f" }}
+      style={{ backgroundColor: "var(--bg-primary)" }}
     >
       {/* Ambient glow */}
       <div
@@ -42,7 +42,7 @@ export default function ChatTimeline() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
             className="font-display text-4xl tracking-widest"
-            style={{ color: "#e8f4ff" }}
+            style={{ color: "var(--text-primary)" }}
           >
             Chat Memories
           </motion.h1>
@@ -88,7 +88,7 @@ export default function ChatTimeline() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.65 }}
             className="font-body italic mt-4 text-sm"
-            style={{ color: "rgba(232,244,255,0.3)" }}
+            style={{ color: "var(--text-muted)" }}
           >
             tap any week to read what lived inside it
           </motion.p>
@@ -117,7 +117,7 @@ export default function ChatTimeline() {
           <span style={{ fontSize: "24px" }}>🦊</span>
           <p
             className="font-hand text-sm mt-2"
-            style={{ color: "rgba(232,244,255,0.25)" }}
+            style={{ color: "var(--text-muted)" }}
           >
             and there&apos;s so much more still being written
           </p>

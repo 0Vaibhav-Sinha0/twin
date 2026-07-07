@@ -186,14 +186,14 @@ export default function PasswordScreen({ onUnlocked }: PasswordScreenProps) {
       <div
         ref={overlayRef}
         className="fixed inset-0 z-50 pointer-events-none"
-        style={{ backgroundColor: "#05070f", opacity: 0 }}
+        style={{ backgroundColor: "var(--bg-primary)", opacity: 0 }}
       />
 
       {/* Main container */}
       <div
         ref={containerRef}
         className="fixed inset-0 flex items-center justify-center overflow-hidden"
-        style={{ backgroundColor: "#05070f" }}
+        style={{ backgroundColor: "var(--bg-primary)" }}
       >
         {/* Ambient particles */}
         <canvas
@@ -269,7 +269,7 @@ export default function PasswordScreen({ onUnlocked }: PasswordScreenProps) {
               <h1
                 className="font-display text-3xl tracking-widest"
                 style={{
-                  color: "#e8f4ff",
+                  color: "var(--text-primary)",
                   textShadow: "0 0 30px rgba(58,169,255,0.4)",
                 }}
               >
@@ -344,7 +344,7 @@ export default function PasswordScreen({ onUnlocked }: PasswordScreenProps) {
             >
               <p
                 className="font-body text-base italic text-center"
-                style={{ color: "rgba(232,244,255,0.55)" }}
+                style={{ color: "var(--text-secondary)" }}
               >
                 {attempts > 0
                   ? hintMessages[Math.min(attempts - 1, hintMessages.length - 1)]
@@ -392,7 +392,7 @@ export default function PasswordScreen({ onUnlocked }: PasswordScreenProps) {
                   background:
                     "linear-gradient(135deg, rgba(58,169,255,0.15), rgba(159,122,234,0.15))",
                   border: "1px solid rgba(58,169,255,0.3)",
-                  color: "#e8f4ff",
+                  color: "var(--text-primary)",
                   boxShadow: value.length > 0
                     ? "0 0 20px rgba(58,169,255,0.2)"
                     : "none",
@@ -406,7 +406,7 @@ export default function PasswordScreen({ onUnlocked }: PasswordScreenProps) {
           {/* Bottom note */}
           <p
             className="mt-6 font-hand text-sm opacity-30 text-center"
-            style={{ color: "#e8f4ff" }}
+            style={{ color: "var(--text-primary)" }}
           >
             made with every bit of care
           </p>

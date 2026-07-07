@@ -36,7 +36,7 @@ export default function HeroContent() {
           className="font-display font-bold leading-none"
           style={{
             fontSize: "clamp(3.5rem, 12vw, 8rem)",
-            color: "#e8f4ff",
+            color: "var(--text-primary)",
             textShadow:
               "0 0 40px rgba(100,255,200,0.3), 0 0 80px rgba(58,169,255,0.15)",
             letterSpacing: "0.12em",
@@ -74,7 +74,7 @@ export default function HeroContent() {
       <motion.p
         {...fadeUp(0.8)}
         className="font-body text-xl md:text-2xl italic max-w-lg leading-relaxed mb-4"
-        style={{ color: "rgba(232,244,255,0.7)" }}
+        style={{ color: "var(--text-secondary)" }}
       >
         This entire world was built for you —
         <br />
@@ -98,7 +98,7 @@ export default function HeroContent() {
       >
         <span
           className="font-display text-xs tracking-widest"
-          style={{ color: "rgba(232,244,255,0.25)", letterSpacing: "0.2em" }}
+          style={{ color: "var(--text-muted)", letterSpacing: "0.2em" }}
         >
           EXPLORE
         </span>

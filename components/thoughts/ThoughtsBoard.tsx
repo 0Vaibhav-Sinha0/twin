@@ -41,7 +41,7 @@ export default function ThoughtsBoard() {
   return (
     <div
       className="min-h-screen has-dock"
-      style={{ backgroundColor: "#05070f" }}
+      style={{ backgroundColor: "var(--bg-primary)" }}
     >
       {/* Ambient glow */}
       <div
@@ -70,7 +70,7 @@ export default function ThoughtsBoard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
             className="font-display text-4xl tracking-widest"
-            style={{ color: "#e8f4ff" }}
+            style={{ color: "var(--text-primary)" }}
           >
             Random Thoughts
           </motion.h1>

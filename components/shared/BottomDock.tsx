@@ -43,12 +43,11 @@ export default function BottomDock() {
       <div
         className="flex items-center gap-1 px-4 py-3 rounded-2xl"
         style={{
-          background: "rgba(5, 7, 15, 0.65)",
+          background: "var(--dock-bg)",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(58, 169, 255, 0.12)",
-          boxShadow:
-            "0 8px 32px rgba(0,0,0,0.4), 0 0 0 0.5px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.06)",
+          border: "1px solid var(--dock-border)",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.06)",
           overflowX: "auto",
           maxWidth: "95vw",
         }}
@@ -63,11 +62,9 @@ export default function BottomDock() {
               style={{
                 width: "44px",
                 height: "44px",
-                background: isActive
-                  ? "rgba(58, 169, 255, 0.18)"
-                  : "transparent",
+                background: isActive ? "var(--dock-active)" : "transparent",
                 boxShadow: isActive
-                  ? "0 0 12px rgba(58,169,255,0.25), inset 0 1px 0 rgba(255,255,255,0.08)"
+                  ? "0 0 12px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.08)"
                   : "none",
               }}
               aria-current={isActive ? "page" : undefined}
@@ -76,7 +73,7 @@ export default function BottomDock() {
                 style={{
                   fontSize: "18px",
                   filter: isActive
-                    ? "drop-shadow(0 0 6px rgba(58,169,255,0.8))"
+                    ? "drop-shadow(0 0 6px var(--accent-primary))"
                     : "none",
                   opacity: isActive ? 1 : 0.55,
                   transition: "all 0.2s ease",

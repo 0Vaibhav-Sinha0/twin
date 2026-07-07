@@ -35,7 +35,7 @@ export default function MemoryItemCard({ memory, index }: MemoryItemCardProps) {
       }}
       className="rounded-xl overflow-hidden"
       style={{
-        background: "rgba(11,18,48,0.6)",
+        background: "var(--bg-card)",
         border: `1px solid ${config.color}22`,
         backdropFilter: "blur(8px)",
       }}
@@ -63,7 +63,7 @@ export default function MemoryItemCard({ memory, index }: MemoryItemCardProps) {
               <span style={{ fontSize: "28px" }}>📱</span>
               <span
                 className="font-display text-xs tracking-widest"
-                style={{ color: "#e8f4ff" }}
+                style={{ color: "var(--text-primary)" }}
               >
                 screenshot
               </span>
@@ -124,7 +124,7 @@ export default function MemoryItemCard({ memory, index }: MemoryItemCardProps) {
           className="font-hand leading-relaxed"
           style={{
             fontSize: "13.5px",
-            color: "rgba(232,244,255,0.8)",
+            color: "var(--text-secondary)",
             lineHeight: "1.7",
           }}
         >

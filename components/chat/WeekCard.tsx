@@ -60,7 +60,7 @@ export default function WeekCard({ week, index, defaultOpen = false }: WeekCardP
             {/* Tagline */}
             <p
               className="font-body italic text-sm leading-relaxed"
-              style={{ color: "rgba(232,244,255,0.6)" }}
+              style={{ color: "var(--text-secondary)" }}
             >
               {week.tagline}
             </p>
