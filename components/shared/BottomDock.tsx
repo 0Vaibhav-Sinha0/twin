@@ -89,7 +89,7 @@ export default function BottomDock() {
                   style={{
                     width: "3px",
                     height: "3px",
-                    backgroundColor: "#3aa9ff",
+                    backgroundColor: "var(--accent-primary)",
                     boxShadow: "0 0 4px #3aa9ff",
                   }}
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}

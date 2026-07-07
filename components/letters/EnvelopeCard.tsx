@@ -118,7 +118,7 @@ export default function EnvelopeCard({ letter, index }: EnvelopeCardProps) {
             <div
               className="mt-2 rounded-xl p-6 flex flex-col gap-4"
               style={{
-                background: "#fefcf7",
+                background: "var(--bg-card-solid)",
                 backgroundImage:
                   "repeating-linear-gradient(transparent, transparent 27px, rgba(122,92,62,0.07) 27px, rgba(122,92,62,0.07) 28px)",
                 backgroundPositionY: "20px",

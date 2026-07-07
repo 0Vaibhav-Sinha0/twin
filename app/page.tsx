@@ -20,6 +20,6 @@ export default function Root() {
   }, [router]);
 
   return (
-    <div className="fixed inset-0" style={{ backgroundColor: "#05070f" }} />
+    <div className="fixed inset-0" style={{ backgroundColor: "var(--bg-primary)" }} />
   );
 }

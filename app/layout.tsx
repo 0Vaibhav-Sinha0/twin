@@ -44,6 +44,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-theme="dark"
       className={`${cinzel.variable} ${cormorant.variable} ${caveat.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">

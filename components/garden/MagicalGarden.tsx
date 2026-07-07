@@ -20,7 +20,7 @@ export default function MagicalGarden() {
   return (
     <div
       className="fixed inset-0 flex flex-col"
-      style={{ backgroundColor: "#05070f", zIndex: 0 }}
+      style={{ backgroundColor: "var(--bg-primary)", zIndex: 0 }}
     >
       {/* Page header — floats over canvas */}
       <div className="absolute top-0 left-0 right-0 z-10 pt-10 pb-4 text-center pointer-events-none">
