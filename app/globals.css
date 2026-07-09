@@ -83,6 +83,10 @@ body {
 /* ── Dock ──────────────────────────────────────────────────────── */
 .has-dock { padding-bottom: 96px; }
 
+.dock-item {
+  scroll-snap-align: center;
+}
+
 .dock-label {
   opacity: 0;
   transform: translateY(4px);
@@ -105,3 +109,8 @@ body {
   transition: background-color 0.35s ease, border-color 0.35s ease, color 0.35s ease, box-shadow 0.35s ease;
 }
 /* But NOT transform or opacity (breaks animations) */
+
+/* Hide webkit scrollbar on dock scroll container only */
+nav[aria-label="Main navigation"] div::-webkit-scrollbar {
+  display: none;
+}
