@@ -63,7 +63,7 @@ export default function ThoughtsBoard() {
             className="font-hand text-lg mb-2"
             style={{ color: "rgba(251,191,36,0.6)" }}
           >
-            things that crossed my mind
+            all the names i have for you
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 16 }}
@@ -72,7 +72,7 @@ export default function ThoughtsBoard() {
             className="font-display text-4xl tracking-widest"
             style={{ color: "var(--text-primary)" }}
           >
-            Random Thoughts
+            Nicknames
           </motion.h1>
           <motion.div
             initial={{ scaleX: 0 }}

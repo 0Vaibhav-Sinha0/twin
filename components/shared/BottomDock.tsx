@@ -14,7 +14,7 @@ const NAV_ITEMS = [
   { href: "/garden",        icon: "🌸",  label: "Garden"        },
   { href: "/cake",          icon: "🎂",  label: "Cake"          },
   { href: "/games",         icon: "🎮",  label: "Games"         },
-  { href: "/thoughts",      icon: "💭",  label: "Thoughts"      },
+  { href: "/thoughts",      icon: "💭",  label: "Nicknames"      },
   { href: "/constellation", icon: "🌌",  label: "Stars"         },
 ];
 

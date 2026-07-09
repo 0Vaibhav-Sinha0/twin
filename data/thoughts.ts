@@ -12,13 +12,10 @@ export type Thought = {
   text: string;
   color: ThoughtColor;
   size: ThoughtSize;
-  // Seed for deterministic random positioning (0-1)
   seed: number;
-  // Slight rotation in degrees
   rotation: number;
 };
 
-// Color token map — night mode glowing sticky notes
 export const THOUGHT_COLORS: Record<
   ThoughtColor,
   { bg: string; border: string; text: string; glow: string }
@@ -61,73 +58,66 @@ export const THOUGHT_COLORS: Record<
   },
 };
 
-// ── ADD YOUR THOUGHTS HERE ──────────────────────────────────────────
-// text: the thought itself
-// color: yellow | pink | blue | green | violet | orange
-// size: small | medium | large
-// rotation: -4 to +4 (degrees of tilt, negative = left, positive = right)
-// seed: 0–1 (controls position on screen — change to reposition)
-// ───────────────────────────────────────────────────────────────────
 export const THOUGHTS: Thought[] = [
   {
     id: "th1",
-    text: "add your thought here",
-    color: "yellow",
+    text: "Zombie",
+    color: "green",
     size: "medium",
     seed: 0.08,
     rotation: -2,
   },
   {
     id: "th2",
-    text: "add your thought here",
-    color: "pink",
-    size: "small",
+    text: "Lomri",
+    color: "orange",
+    size: "large",
     seed: 0.22,
     rotation: 1.5,
   },
   {
     id: "th3",
-    text: "add your thought here",
+    text: "Heera",
     color: "blue",
-    size: "large",
+    size: "medium",
     seed: 0.35,
     rotation: -1,
   },
   {
     id: "th4",
-    text: "add your thought here",
+    text: "Silver Fox",
     color: "violet",
-    size: "medium",
+    size: "large",
     seed: 0.48,
     rotation: 2.5,
   },
   {
     id: "th5",
-    text: "add your thought here",
-    color: "green",
-    size: "small",
+    text: "Dictator",
+    color: "pink",
+    size: "medium",
     seed: 0.60,
     rotation: -3,
   },
   {
     id: "th6",
-    text: "add your thought here",
-    color: "orange",
-    size: "medium",
+    text: "Diamond Fox",
+    color: "yellow",
+    size: "large",
     seed: 0.72,
     rotation: 1,
   },
   {
     id: "th7",
-    text: "add your thought here",
-    color: "yellow",
-    size: "small",
+    text: "Moon",
+    color: "blue",
+    size: "medium",
     seed: 0.15,
     rotation: 3,
   },
   {
     id: "th8",
-    text: "add your thought here",
+    text: "Twin",
     color: "pink",
     size: "large",
     seed: 0.55,
@@ -135,34 +125,26 @@ export const THOUGHTS: Thought[] = [
   },
   {
     id: "th9",
-    text: "add your thought here",
-    color: "blue",
+    text: "Twinie",
+    color: "violet",
     size: "medium",
     seed: 0.82,
     rotation: 2,
   },
   {
     id: "th10",
-    text: "add your thought here",
-    color: "violet",
+    text: "Twinsie",
+    color: "yellow",
     size: "small",
     seed: 0.90,
     rotation: -2.5,
   },
   {
     id: "th11",
-    text: "add your thought here",
+    text: "Twinskie",
     color: "green",
     size: "medium",
     seed: 0.42,
     rotation: 1.5,
-  },
-  {
-    id: "th12",
-    text: "add your thought here",
-    color: "orange",
-    size: "small",
-    seed: 0.28,
-    rotation: -0.5,
   },
 ];
