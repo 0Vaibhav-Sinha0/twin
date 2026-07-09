@@ -1,27 +1,32 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { THOUGHTS } from "@/data/thoughts";
 import StickyNote from "./StickyNote";
 
-// Deterministic position from seed — avoids overlap by dividing screen into zones
+const NO_RESPONSES = [
+  "wrong answer bestie 💀",
+  "okay but that was mean 😭",
+  "the audacity. the nerve. the disrespect.",
+  "fine. i didn't want to tell you anyway. (i did.)",
+  "noted. blocking you. (not really.)",
+  "that hurt. i'm going to cry now. okay bye.",
+  "NO?? who raised you 😭",
+  "this is not the response i prepared for.",
+];
+
 function seedToPosition(seed: number, index: number, total: number) {
-  // Divide into a loose grid of zones, offset by seed for organic feel
   const cols = 4;
   const rows = Math.ceil(total / cols);
   const col = index % cols;
   const row = Math.floor(index / cols);
-
   const zoneW = 100 / cols;
   const zoneH = 100 / rows;
-
-  // Base position in zone + seed-driven offset for organic scatter
   const xBase = col * zoneW + zoneW * 0.1;
   const yBase = row * zoneH + zoneH * 0.1;
-  const xOffset = (seed * zoneW * 0.7);
+  const xOffset = seed * zoneW * 0.7;
   const yOffset = ((seed * 7.3) % 1) * zoneH * 0.6;
-
   return {
     left: `${Math.min(xBase + xOffset, 88)}%`,
     top: `${Math.min(yBase + yOffset, 85)}%`,
@@ -30,13 +35,26 @@ function seedToPosition(seed: number, index: number, total: number) {
 
 export default function ThoughtsBoard() {
   const [shuffleKey, setShuffleKey] = useState(0);
+  const [unlockState, setUnlockState] = useState<"idle" | "unlocked" | "no">("idle");
+  const [noResponse, setNoResponse] = useState("");
+  const [noCount, setNoCount] = useState(0);
 
   const positions = useMemo(() => {
-    return THOUGHTS.map((t, i) => seedToPosition(t.seed + shuffleKey * 0.13, i, THOUGHTS.length));
+    return THOUGHTS.map((t, i) =>
+      seedToPosition(t.seed + shuffleKey * 0.13, i, THOUGHTS.length)
+    );
   }, [shuffleKey]);
 
-  // Estimate total scrollable height based on note count
   const boardHeight = Math.max(900, Math.ceil(THOUGHTS.length / 4) * 280 + 200);
+
+  const handleNo = () => {
+    const next = noCount + 1;
+    setNoCount(next);
+    setNoResponse(NO_RESPONSES[Math.floor(Math.random() * NO_RESPONSES.length)]);
+    setUnlockState("no");
+    // After 2s, reset back to idle so they can try again
+    setTimeout(() => setUnlockState("idle"), 2200);
+  };
 
   return (
     <div
@@ -116,6 +134,176 @@ export default function ThoughtsBoard() {
             />
           ))}
         </div>
+
+        {/* ── Locked nickname section ─────────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="mx-auto px-6 pb-32 flex flex-col items-center gap-6"
+          style={{ maxWidth: "420px" }}
+        >
+          {/* Divider */}
+          <div className="flex items-center gap-3 w-full">
+            <div className="h-px flex-1" style={{ background: "rgba(251,191,36,0.15)" }} />
+            <span style={{ fontSize: "14px", opacity: 0.4 }}>🔒</span>
+            <div className="h-px flex-1" style={{ background: "rgba(251,191,36,0.15)" }} />
+          </div>
+
+          {/* Lock card */}
+          <div
+            className="w-full rounded-2xl p-7 flex flex-col items-center gap-5 text-center"
+            style={{
+              background: "var(--bg-card)",
+              border: "1px solid rgba(251,191,36,0.2)",
+              boxShadow: "0 0 32px rgba(251,191,36,0.06)",
+              backdropFilter: "blur(12px)",
+            }}
+          >
+            {/* Lock icon with pulse */}
+            <motion.div
+              animate={unlockState === "idle" ? { scale: [1, 1.08, 1] } : {}}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              style={{ fontSize: "36px" }}
+            >
+              {unlockState === "unlocked" ? "🔓" : "🔒"}
+            </motion.div>
+
+            <div>
+              <p
+                className="font-display text-sm tracking-widest mb-1"
+                style={{ color: "var(--text-muted)", letterSpacing: "0.18em" }}
+              >
+                1 NICKNAME LOCKED
+              </p>
+              <p
+                className="font-hand text-xl leading-snug"
+                style={{ color: "var(--text-primary)" }}
+              >
+                still waiting to unlock one nickname
+              </p>
+            </div>
+
+            {/* State: idle — show Yes / No */}
+            <AnimatePresence mode="wait">
+              {unlockState === "idle" && (
+                <motion.div
+                  key="buttons"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex flex-col items-center gap-3 w-full"
+                >
+                  <p
+                    className="font-hand text-base"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    unlock it?
+                  </p>
+                  <div className="flex gap-3 w-full">
+                    {/* YES */}
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setUnlockState("unlocked")}
+                      className="flex-1 py-3 rounded-xl font-display text-xs tracking-widest"
+                      style={{
+                        background: "linear-gradient(135deg, rgba(251,191,36,0.2), rgba(251,146,60,0.15))",
+                        border: "1px solid rgba(251,191,36,0.4)",
+                        color: "#fde68a",
+                        boxShadow: "0 0 16px rgba(251,191,36,0.15)",
+                      }}
+                    >
+                      YES ✦
+                    </motion.button>
+
+                    {/* NO */}
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleNo}
+                      className="flex-1 py-3 rounded-xl font-display text-xs tracking-widest"
+                      style={{
+                        background: "rgba(255,255,255,0.04)",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                        color: "var(--text-muted)",
+                      }}
+                    >
+                      NO
+                    </motion.button>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* State: unlocked — show the nickname */}
+              {unlockState === "unlocked" && (
+                <motion.div
+                  key="unlocked"
+                  initial={{ opacity: 0, scale: 0.85 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  className="flex flex-col items-center gap-3"
+                >
+                  {/* Sparkle burst */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0, 1, 0] }}
+                    transition={{ duration: 0.8 }}
+                    style={{ fontSize: "28px", letterSpacing: "8px" }}
+                  >
+                    ✨✨✨
+                  </motion.div>
+
+                  {/* The nickname */}
+                  <motion.p
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2, duration: 0.5 }}
+                    className="font-display text-4xl tracking-widest"
+                    style={{
+                      color: "#fde68a",
+                      textShadow: "0 0 32px rgba(251,191,36,0.6)",
+                    }}
+                  >
+                    Mine
+                  </motion.p>
+
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.45, duration: 0.5 }}
+                    className="font-hand text-base text-center leading-relaxed"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    waiting to call u by this nickname 😭
+                  </motion.p>
+                </motion.div>
+              )}
+
+              {/* State: no — funny random response */}
+              {unlockState === "no" && (
+                <motion.div
+                  key={`no-${noCount}`}
+                  initial={{ opacity: 0, scale: 0.9, rotate: -2 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                  className="flex flex-col items-center gap-2"
+                >
+                  <span style={{ fontSize: "32px" }}>💀</span>
+                  <p
+                    className="font-hand text-lg text-center leading-snug"
+                    style={{ color: "#fb923c" }}
+                  >
+                    {noResponse}
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
