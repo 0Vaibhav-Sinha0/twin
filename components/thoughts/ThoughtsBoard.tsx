@@ -6,13 +6,9 @@ import { THOUGHTS } from "@/data/thoughts";
 import StickyNote from "./StickyNote";
 
 const NO_RESPONSES = [
-  "wrong answer bestie 💀",
+  "wrong answer twin ☠️",
   "okay but that was mean 😭",
-  "the audacity. the nerve. the disrespect.",
-  "fine. i didn't want to tell you anyway. (i did.)",
-  "noted. blocking you. (not really.)",
   "that hurt. i'm going to cry now. okay bye.",
-  "NO?? who raised you 😭",
   "this is not the response i prepared for.",
 ];
 
