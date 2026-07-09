@@ -72,11 +72,10 @@ export default function BottomDock() {
       initial={{ y: 80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed bottom-6 left-1/2 z-40"
-      style={{ transform: "translateX(-50%)", maxWidth: "95vw" }}
+      className="fixed bottom-6 left-4 right-4 z-40 flex justify-center"
       aria-label="Main navigation"
     >
-      <div className="relative">
+      <div className="relative w-full" style={{ maxWidth: "480px" }}>
         {/* Left fade + scroll hint arrow */}
         <AnimatePresence>
           {canScrollLeft && (
@@ -127,7 +126,7 @@ export default function BottomDock() {
 
         <div
           ref={scrollRef}
-          className="flex items-center gap-1 px-4 py-3 rounded-2xl"
+          className="flex items-center gap-1 px-4 py-3 rounded-2xl w-full"
           style={{
             background: "var(--dock-bg)",
             backdropFilter: "blur(20px)",
