@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useCallback, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Float, Sparkles } from "@react-three/drei";
+import { OrbitControls, Float, Sparkles, Billboard } from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 
@@ -228,18 +228,38 @@ function CakeSlice({ progress }: { progress: number }) {
   );
 }
 
-function CakeMesh({ candlesLit, extinguishing, cutProgress }: {
+function CakeMesh({ candlesLit, extinguishing, cutProgress, onHoverChange }: {
   candlesLit: boolean[];
   extinguishing: boolean;
   cutProgress: number;
+  onHoverChange?: (hovered: boolean) => void;
 }) {
   const groupRef = useRef<THREE.Group>(null);
+  const hoveredRef = useRef(false);
+  const currentScaleRef = useRef(1);
 
   useFrame(({ clock }) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y = clock.getElapsedTime() * 0.08;
+      const baseSpeed = 0.08;
+      const hoverBoost = hoveredRef.current ? 0.18 : 0;
+      groupRef.current.rotation.y = clock.getElapsedTime() * (baseSpeed + hoverBoost);
+
+      // Smooth scale toward hover target
+      const targetScale = hoveredRef.current ? 1.04 : 1;
+      currentScaleRef.current += (targetScale - currentScaleRef.current) * 0.08;
+      groupRef.current.scale.setScalar(currentScaleRef.current);
     }
   });
+
+  const handlePointerOver = useCallback(() => {
+    hoveredRef.current = true;
+    onHoverChange?.(true);
+  }, [onHoverChange]);
+
+  const handlePointerOut = useCallback(() => {
+    hoveredRef.current = false;
+    onHoverChange?.(false);
+  }, [onHoverChange]);
 
   const candlePositions = useMemo(() => {
     const count = 7;
@@ -262,7 +282,12 @@ function CakeMesh({ candlesLit, extinguishing, cutProgress }: {
   const cutLength = isCutOpen ? Math.PI * 2 - Math.PI / 4 : Math.PI * 2;
 
   return (
-    <group ref={groupRef} position={[0, -0.5, 0]}>
+    <group
+      ref={groupRef}
+      position={[0, -0.5, 0]}
+      onPointerOver={handlePointerOver}
+      onPointerOut={handlePointerOut}
+    >
       <mesh position={[0, 0.18, 0]}>
         <cylinderGeometry args={[0.72, 0.75, 0.36, 48, 1, false, cutStart, cutLength]} />
         <meshPhysicalMaterial color="#fbcfe8" roughness={0.32} metalness={0.05} clearcoat={0.4} clearcoatRoughness={0.3} />
@@ -344,6 +369,81 @@ function CakeMesh({ candlesLit, extinguishing, cutProgress }: {
   );
 }
 
+function Butterfly({ radius, speed, yOffset, phaseOffset, color }: {
+  radius: number; speed: number; yOffset: number; phaseOffset: number; color: string;
+}) {
+  const groupRef = useRef<THREE.Group>(null);
+  const wingLRef = useRef<THREE.Mesh>(null);
+  const wingRRef = useRef<THREE.Mesh>(null);
+
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+    if (groupRef.current) {
+      const angle = t * speed + phaseOffset;
+      groupRef.current.position.x = Math.cos(angle) * radius;
+      groupRef.current.position.z = Math.sin(angle) * radius;
+      groupRef.current.position.y = yOffset + Math.sin(t * 0.8 + phaseOffset) * 0.15;
+    }
+    // Wing flap
+    const flap = Math.sin(t * 9 + phaseOffset) * 0.5 + 0.5;
+    if (wingLRef.current) wingLRef.current.rotation.y = flap * 0.9;
+    if (wingRRef.current) wingRRef.current.rotation.y = -flap * 0.9;
+  });
+
+  return (
+    <group ref={groupRef}>
+      <Billboard>
+        <mesh ref={wingLRef} position={[-0.02, 0, 0]}>
+          <circleGeometry args={[0.035, 8]} />
+          <meshStandardMaterial
+            color={color}
+            emissive={color}
+            emissiveIntensity={0.6}
+            transparent
+            opacity={0.75}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+        <mesh ref={wingRRef} position={[0.02, 0, 0]}>
+          <circleGeometry args={[0.035, 8]} />
+          <meshStandardMaterial
+            color={color}
+            emissive={color}
+            emissiveIntensity={0.6}
+            transparent
+            opacity={0.75}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+        {/* Tiny glow point at body */}
+        <pointLight color={color} intensity={0.15} distance={0.5} />
+      </Billboard>
+    </group>
+  );
+}
+
+function Butterflies({ count }: { count: number }) {
+  const butterflies = useMemo(
+    () =>
+      Array.from({ length: count }, (_, i) => ({
+        radius: 1.3 + Math.random() * 0.6,
+        speed: 0.15 + Math.random() * 0.1,
+        yOffset: 0.3 + Math.random() * 1.2,
+        phaseOffset: (i / count) * Math.PI * 2,
+        color: ["#fde68a", "#f9a8d4", "#e9d5ff"][i % 3],
+      })),
+    [count]
+  );
+
+  return (
+    <>
+      {butterflies.map((b, i) => (
+        <Butterfly key={i} {...b} />
+      ))}
+    </>
+  );
+}
+
 function AmbientFloaters({ reducedMotion }: { reducedMotion: boolean }) {
   const petalCount = reducedMotion ? 5 : 12;
   const petals = useMemo(
@@ -382,14 +482,30 @@ function AmbientFloaters({ reducedMotion }: { reducedMotion: boolean }) {
 function CameraRig({ phase }: { phase: CakePhase }) {
   useFrame(({ camera, clock }) => {
     const t = clock.getElapsedTime();
-    const baseY = 1.2 + Math.sin(t * 0.3) * 0.04;
-    const baseZ = phase === "wishing" ? 2.1 : 2.8;
-    const baseX = Math.sin(t * 0.15) * 0.15;
 
-    camera.position.x += (baseX - camera.position.x) * 0.02;
-    camera.position.y += (baseY - camera.position.y) * 0.02;
-    camera.position.z += (baseZ - camera.position.z) * 0.02;
-    camera.lookAt(0, 0.5, 0);
+    // Slow orbit — a full loop takes ~90s, barely perceptible but alive
+    const orbitSpeed = phase === "cutting" || phase === "cut" ? 0.02 : 0.045;
+    const orbitAngle = t * orbitSpeed;
+    const orbitRadius = phase === "wishing" ? 2.05 : phase === "cut" ? 3.1 : 2.8;
+
+    // Breathing zoom — gentle in/out, faster during wishing for intimacy
+    const breatheSpeed = phase === "wishing" ? 0.5 : 0.25;
+    const breatheAmount = phase === "wishing" ? 0.08 : 0.05;
+    const breathe = Math.sin(t * breatheSpeed) * breatheAmount;
+
+    const targetX = Math.sin(orbitAngle) * (orbitRadius + breathe) * 0.35;
+    const targetZ = Math.cos(orbitAngle) * (orbitRadius + breathe);
+    const targetY = 1.2 + Math.sin(t * 0.3) * 0.05;
+
+    // Smooth follow — slower lerp for the wish moment (more deliberate)
+    const lerpSpeed = phase === "wishing" ? 0.015 : 0.02;
+    camera.position.x += (targetX - camera.position.x) * lerpSpeed;
+    camera.position.y += (targetY - camera.position.y) * lerpSpeed;
+    camera.position.z += (targetZ - camera.position.z) * lerpSpeed;
+
+    // Look-at target drifts subtly too, adds life
+    const lookY = 0.5 + Math.sin(t * 0.2) * 0.02;
+    camera.lookAt(0, lookY, 0);
   });
   return null;
 }
@@ -400,6 +516,7 @@ interface CakeSceneProps {
   extinguishing: boolean;
   cutProgress: number;
   reducedMotion?: boolean;
+  onCakeHoverChange?: (hovered: boolean) => void;
 }
 
 export default function CakeScene({
@@ -408,9 +525,16 @@ export default function CakeScene({
   extinguishing,
   cutProgress,
   reducedMotion = false,
+  onCakeHoverChange,
 }: CakeSceneProps) {
   const allLit = candlesLit.every(Boolean);
   const dimmed = phase === "wishing" || phase === "blown" || phase === "cutting" || phase === "cut";
+  const [cakeHovered, setCakeHovered] = useState(false);
+
+  const handleHoverChange = useCallback((hovered: boolean) => {
+    setCakeHovered(hovered);
+    onCakeHoverChange?.(hovered);
+  }, [onCakeHoverChange]);
 
   return (
     <Canvas
@@ -430,13 +554,39 @@ export default function CakeScene({
       <pointLight position={[-2, 1.5, -2]} intensity={0.4} color="#c084fc" />
       <pointLight position={[0, 2.5, 1]} intensity={0.3} color="#fbcfe8" />
 
-      <CakeMesh candlesLit={candlesLit} extinguishing={extinguishing} cutProgress={cutProgress} />
+      <CakeMesh
+        candlesLit={candlesLit}
+        extinguishing={extinguishing}
+        cutProgress={cutProgress}
+        onHoverChange={handleHoverChange}
+      />
+
+      {/* Hover sparkle burst — extra sparkles appear when hovering the cake */}
+      {cakeHovered && !reducedMotion && (
+        <Sparkles count={20} scale={[1.8, 1.6, 1.8]} size={2.5} speed={0.8} opacity={0.9} color="#fde68a" position={[0, 0.4, 0]} />
+      )}
 
       {!reducedMotion && <AmbientFloaters reducedMotion={reducedMotion} />}
 
       {!reducedMotion && (
+        <Butterflies count={dimmed ? 2 : 3} />
+      )}
+
+      {/* Scattered ambient sparkles — whole scene */}
+      {!reducedMotion && (
         <Sparkles count={dimmed ? 40 : 20} scale={4} size={2} speed={0.3} opacity={0.6} color="#fde68a" />
       )}
+
+      {/* Tight sparkle halo hugging the cake body itself */}
+      <Sparkles
+        count={reducedMotion ? 15 : 30}
+        scale={[1.6, 1.4, 1.6]}
+        size={1.5}
+        speed={0.4}
+        opacity={0.8}
+        color="#fce7f3"
+        position={[0, 0.4, 0]}
+      />
 
       <CameraRig phase={phase} />
 

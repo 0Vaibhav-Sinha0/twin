@@ -33,6 +33,7 @@ export default function BirthdayCake() {
   const [showFinalMessage, setShowFinalMessage] = useState(false);
   const [showHeartMessage, setShowHeartMessage] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [cakeHovered, setCakeHovered] = useState(false);
   const lightingRef = useRef(false);
   const touchStartY = useRef<number | null>(null);
   const mouseStartY = useRef<number | null>(null);
@@ -41,9 +42,12 @@ export default function BirthdayCake() {
 
   // Detect low-end / mobile for reduced particle count
   useEffect(() => {
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const isSmallScreen = window.innerWidth < 480;
-    setReducedMotion(isMobile && isSmallScreen);
+    const isMobileUA = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    // Widened: any mobile device gets reduced motion now that Pass 2 added
+    // butterflies + a tight sparkle halo on top of the existing ambient sparkles.
+    // TODO: once tested on a real phone, these thresholds may loosen —
+    // this errs conservative rather than risk a laggy first impression.
+    setReducedMotion(isMobileUA);
   }, []);
 
   const handleBlow = useCallback(() => {
@@ -200,8 +204,12 @@ export default function BirthdayCake() {
 
       {/* 3D Cake */}
       <div
-        className="relative flex-1 w-full max-w-xl mx-auto cursor-pointer"
-        style={{ paddingTop: "80px", paddingBottom: "140px" }}
+        className="relative flex-1 w-full max-w-xl mx-auto"
+        style={{
+          paddingTop: "80px",
+          paddingBottom: "140px",
+          cursor: phase === "idle" ? (cakeHovered ? "pointer" : "pointer") : cakeHovered ? "grab" : "default",
+        }}
         onClick={phase === "idle" ? handleCakeTap : undefined}
       >
         <CakeScene
@@ -210,6 +218,7 @@ export default function BirthdayCake() {
           extinguishing={extinguishing}
           cutProgress={cutProgress}
           reducedMotion={reducedMotion}
+          onCakeHoverChange={setCakeHovered}
         />
 
         {/* Tap hint — idle only */}
