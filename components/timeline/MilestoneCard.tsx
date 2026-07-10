@@ -9,7 +9,7 @@ interface MilestoneCardProps {
   index: number;
 }
 
-// Night colours
+// Night colours (early milestones — blue)
 const N_BG     = "#0b1230";
 const N_BORDER = "#3aa9ff";
 const N_TITLE  = "#e8f4ff";
@@ -17,13 +17,13 @@ const N_BODY   = "#9fb8d8";
 const N_DATE   = "#3aa9ff";
 const N_NODE   = "#3aa9ff";
 
-// Day colours
-const D_BG     = "#fefcf7";
-const D_BORDER = "#c9886b";
-const D_TITLE  = "#7a5c3e";
-const D_BODY   = "#9a7a60";
-const D_DATE   = "#c9886b";
-const D_NODE   = "#c9886b";
+// "Warm" end colours (later milestones — deep violet, still dark)
+const D_BG     = "#1e1240";
+const D_BORDER = "#c084fc";
+const D_TITLE  = "#f3e8ff";
+const D_BODY   = "#d8c5f0";
+const D_DATE   = "#c084fc";
+const D_NODE   = "#e879f9";
 
 export default function MilestoneCard({ milestone, index }: MilestoneCardProps) {
   const { warmth, side } = milestone;

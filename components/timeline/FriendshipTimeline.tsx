@@ -9,19 +9,19 @@ import { useTimelineScroll, interpolateColor } from "./useTimelineScroll";
 export default function FriendshipTimeline() {
   const { progress, containerRef } = useTimelineScroll();
 
-  // Background interpolates from night void → day parchment as you scroll
+  // Background interpolates from void black → deep violet as you scroll (stays dark throughout)
   const bgColor = useMemo(
-    () => interpolateColor("#05070f", "#fbf6ec", progress),
+    () => interpolateColor("#05070f", "#1a0a2e", progress),
     [progress]
   );
 
   const textColor = useMemo(
-    () => interpolateColor("#e8f4ff", "#7a5c3e", progress),
+    () => interpolateColor("#e8f4ff", "#f3e8ff", progress),
     [progress]
   );
 
   const accentColor = useMemo(
-    () => interpolateColor("#3aa9ff", "#c9886b", progress),
+    () => interpolateColor("#3aa9ff", "#c084fc", progress),
     [progress]
   );
 
@@ -80,7 +80,7 @@ export default function FriendshipTimeline() {
           style={{
             width: "2px",
             background:
-              "linear-gradient(to bottom, #3aa9ff 0%, #9f7aea 35%, #c9886b 65%, #4a6b5a 100%)",
+              "linear-gradient(to bottom, #3aa9ff 0%, #9f7aea 40%, #c084fc 70%, #e879f9 100%)",
             opacity: 0.4,
             borderRadius: "1px",
           }}
@@ -111,8 +111,8 @@ export default function FriendshipTimeline() {
             style={{
               width: "56px",
               height: "56px",
-              background: "linear-gradient(135deg, #c9886b33, #4a6b5a33)",
-              border: "1px solid rgba(201,136,107,0.4)",
+              background: "linear-gradient(135deg, #c084fc33, #9f7aea33)",
+              border: "1px solid rgba(192,132,252,0.4)",
               fontSize: "24px",
             }}
           >
@@ -120,7 +120,7 @@ export default function FriendshipTimeline() {
           </div>
           <p
             className="font-hand text-center"
-            style={{ color: "#7a5c3e", opacity: 0.6, fontSize: "14px" }}
+            style={{ color: "#f3e8ff", opacity: 0.6, fontSize: "14px" }}
           >
             and this is only the beginning
           </p>
