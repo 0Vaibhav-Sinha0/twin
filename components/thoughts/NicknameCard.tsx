@@ -16,13 +16,13 @@ export default function NicknameCard({ thought, index }: NicknameCardProps) {
   return (
     <div
       className="relative flex items-center justify-center mx-auto w-full"
-      style={{ minHeight: "84px", maxWidth: "340px" }}
+      style={{ minHeight: "76px", maxWidth: "280px" }}
     >
       {/* Left card slot — fixed width, close to spine */}
-      <div className="flex justify-end" style={{ width: "150px" }}>
+      <div className="flex justify-end" style={{ width: "118px" }}>
         {isLeft && (
           <motion.div
-            initial={{ opacity: 0, x: -24 }}
+            initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.6, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
@@ -41,19 +41,19 @@ export default function NicknameCard({ thought, index }: NicknameCardProps) {
         transition={{ duration: 0.4, delay: 0.15, type: "spring", stiffness: 300 }}
         className="relative z-10 flex-shrink-0 rounded-full"
         style={{
-          width: "10px",
-          height: "10px",
-          margin: "0 12px",
+          width: "8px",
+          height: "8px",
+          margin: "0 8px",
           background: colors.text,
           boxShadow: `0 0 10px ${colors.glow}, 0 0 20px ${colors.glow}`,
         }}
       />
 
       {/* Right card slot — fixed width, close to spine */}
-      <div className="flex justify-start" style={{ width: "150px" }}>
+      <div className="flex justify-start" style={{ width: "118px" }}>
         {!isLeft && (
           <motion.div
-            initial={{ opacity: 0, x: 24 }}
+            initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.6, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
@@ -78,11 +78,11 @@ function Card({
 }) {
   return (
     <div
-      className="rounded-2xl px-4 py-3 transition-shadow duration-300"
+      className="rounded-2xl px-3 py-2.5 transition-shadow duration-300"
       style={{
         background: colors.bg,
         border: `1px solid ${colors.border}`,
-        boxShadow: `0 0 16px ${colors.glow}, 0 4px 16px rgba(0,0,0,0.4)`,
+        boxShadow: `0 0 14px ${colors.glow}, 0 4px 14px rgba(0,0,0,0.4)`,
         textAlign: align,
         backdropFilter: "blur(12px)",
       }}
@@ -90,9 +90,9 @@ function Card({
       <p
         className="font-hand"
         style={{
-          fontSize: "18px",
+          fontSize: "16px",
           color: colors.text,
-          lineHeight: "1.4",
+          lineHeight: "1.35",
         }}
       >
         {thought.text}
