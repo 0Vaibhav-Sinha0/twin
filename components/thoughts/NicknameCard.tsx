@@ -14,16 +14,16 @@ export default function NicknameCard({ thought, index }: NicknameCardProps) {
   const colors = THOUGHT_COLORS[thought.color];
 
   return (
-    <div className="relative flex items-center w-full" style={{ minHeight: "96px" }}>
-      {/* Left card slot */}
-      <div className="flex-1 flex justify-end pr-6">
+    <div className="relative flex items-center justify-center w-full" style={{ minHeight: "84px" }}>
+      {/* Left card slot — capped width so card hugs the spine */}
+      <div className="flex justify-end" style={{ width: "38%" }}>
         {isLeft && (
           <motion.div
-            initial={{ opacity: 0, x: -32 }}
+            initial={{ opacity: 0, x: -24 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.6, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-            style={{ maxWidth: "220px", width: "100%" }}
+            style={{ maxWidth: "160px", width: "100%" }}
           >
             <Card thought={thought} colors={colors} align="right" />
           </motion.div>
@@ -45,15 +45,15 @@ export default function NicknameCard({ thought, index }: NicknameCardProps) {
         }}
       />
 
-      {/* Right card slot */}
-      <div className="flex-1 flex justify-start pl-6">
+      {/* Right card slot — capped width so card hugs the spine */}
+      <div className="flex justify-start" style={{ width: "38%" }}>
         {!isLeft && (
           <motion.div
-            initial={{ opacity: 0, x: 32 }}
+            initial={{ opacity: 0, x: 24 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.6, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-            style={{ maxWidth: "220px", width: "100%" }}
+            style={{ maxWidth: "160px", width: "100%" }}
           >
             <Card thought={thought} colors={colors} align="left" />
           </motion.div>
@@ -74,7 +74,7 @@ function Card({
 }) {
   return (
     <div
-      className="rounded-2xl px-5 py-4 transition-shadow duration-300"
+      className="rounded-2xl px-4 py-3 transition-shadow duration-300"
       style={{
         background: colors.bg,
         border: `1px solid ${colors.border}`,
@@ -86,7 +86,7 @@ function Card({
       <p
         className="font-hand"
         style={{
-          fontSize: "20px",
+          fontSize: "18px",
           color: colors.text,
           lineHeight: "1.4",
         }}
