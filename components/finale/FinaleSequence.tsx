@@ -1,98 +1,96 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { FINALE_PARTS } from "@/data/finale";
-import type { MessageLine } from "@/data/finale";
-import { getLineDisplayDuration, FADE_MS } from "@/lib/readingPace";
+
+// Typewriter speed — fast, ms per character
+const TYPE_SPEED_MS = 18;
+// Pause after a part finishes typing, before the next part begins
+const PAUSE_BETWEEN_PARTS_MS = 2200;
+// Extra pause after the very first part (gives her a moment to settle in)
+const INITIAL_PAUSE_MS = 600;
 
 type PlaybackState = "idle" | "playing" | "done";
 
+// Flattens a part's lines into one displayable block of text,
+// preserving each line as its own paragraph within the block.
+function partToText(partIndex: number): string[] {
+  return FINALE_PARTS[partIndex].lines.map((l) => l.text);
+}
+
 export default function FinaleSequence() {
   const [playback, setPlayback] = useState<PlaybackState>("idle");
-  const [partIndex, setPartIndex] = useState(0);
-  const [lineIndex, setLineIndex] = useState(-1); // -1 = showing part label only
-  const [visible, setVisible] = useState(true);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [completedParts, setCompletedParts] = useState<string[][]>([]);
+  const [typingPartIndex, setTypingPartIndex] = useState(-1);
+  const [typedLines, setTypedLines] = useState<string[]>([]);
+  const [currentLineChars, setCurrentLineChars] = useState(0);
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const scrollAnchorRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const currentPart = FINALE_PARTS[partIndex];
-  const currentLine: MessageLine | null =
-    lineIndex >= 0 && currentPart ? currentPart.lines[lineIndex] : null;
-
-  const clearTimer = useCallback(() => {
+  const clearTimers = useCallback(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (intervalRef.current) clearInterval(intervalRef.current);
   }, []);
 
-  const advance = useCallback(() => {
-    setPartIndex((pIdx) => {
-      const part = FINALE_PARTS[pIdx];
-      setLineIndex((lIdx) => {
-        // Still label-only phase → move to first line
-        if (lIdx === -1) return 0;
-        // More lines in this part
-        if (lIdx + 1 < part.lines.length) return lIdx + 1;
-        return lIdx; // will be handled by part transition below
-      });
-      return pIdx;
-    });
-  }, []);
-
-  // Core sequencing loop
+  // Auto-scroll to keep the newest content in view
   useEffect(() => {
-    if (playback !== "playing") return;
+    scrollAnchorRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [completedParts, typedLines, currentLineChars]);
 
-    clearTimer();
-    setVisible(true);
-
-    const part = FINALE_PARTS[partIndex];
-    if (!part) {
+  // Type out a single part, line by line, character by character, fast
+  const typeOutPart = useCallback((partIndex: number) => {
+    if (partIndex >= FINALE_PARTS.length) {
       setPlayback("done");
       return;
     }
 
-    // Label-only beat — held briefly before first line
-    if (lineIndex === -1) {
-      timeoutRef.current = setTimeout(() => {
-        setVisible(false);
-        timeoutRef.current = setTimeout(() => {
-          setLineIndex(0);
-        }, FADE_MS);
-      }, 1800);
-      return;
+    setTypingPartIndex(partIndex);
+    setTypedLines([]);
+    setCurrentLineChars(0);
+
+    const lines = partToText(partIndex);
+    let lineIdx = 0;
+    let charIdx = 0;
+    const finishedLines: string[] = [];
+
+    function typeChar() {
+      const line = lines[lineIdx];
+      charIdx++;
+      setCurrentLineChars(charIdx);
+
+      if (charIdx >= line.length) {
+        // Line finished — commit it, move to next line
+        finishedLines.push(line);
+        setTypedLines([...finishedLines]);
+        lineIdx++;
+        charIdx = 0;
+        setCurrentLineChars(0);
+
+        if (lineIdx >= lines.length) {
+          // Part finished typing — commit to completed, pause, then next part
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          timeoutRef.current = setTimeout(() => {
+            setCompletedParts((prev) => [...prev, lines]);
+            setTypingPartIndex(-1);
+            setTypedLines([]);
+            typeOutPart(partIndex + 1);
+          }, PAUSE_BETWEEN_PARTS_MS);
+        }
+      }
     }
 
-    const line = part.lines[lineIndex];
-    if (!line) return;
-
-    const duration = getLineDisplayDuration(line);
-
-    timeoutRef.current = setTimeout(() => {
-      setVisible(false);
-      timeoutRef.current = setTimeout(() => {
-        // Move to next line or next part
-        if (lineIndex + 1 < part.lines.length) {
-          setLineIndex((i) => i + 1);
-        } else if (partIndex + 1 < FINALE_PARTS.length) {
-          setPartIndex((i) => i + 1);
-          setLineIndex(-1);
-        } else {
-          setPlayback("done");
-        }
-      }, FADE_MS);
-    }, duration);
-
-    return clearTimer;
+    intervalRef.current = setInterval(typeChar, TYPE_SPEED_MS);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playback, partIndex, lineIndex]);
+  }, []);
 
   const handleBegin = useCallback(() => {
     setPlayback("playing");
-    setPartIndex(0);
-    setLineIndex(-1);
-    setVisible(true);
+    setCompletedParts([]);
 
-    // Piano music — gracefully no-ops if file doesn't exist yet
     if (!audioRef.current) {
       const audio = new Audio("/audio/finale-song.mp3");
       audio.volume = 0;
@@ -110,9 +108,13 @@ export default function FinaleSequence() {
         audio.volume = vol;
       }, 150);
     }).catch(() => {
-      // No audio file yet — sequence still plays silently
+      // No audio yet — sequence still plays silently
     });
-  }, []);
+
+    timeoutRef.current = setTimeout(() => {
+      typeOutPart(0);
+    }, INITIAL_PAUSE_MS);
+  }, [typeOutPart]);
 
   // Fade out music when done
   useEffect(() => {
@@ -131,162 +133,197 @@ export default function FinaleSequence() {
     }
   }, [playback]);
 
-  useEffect(() => clearTimer, [clearTimer]);
+  useEffect(() => clearTimers, [clearTimers]);
+
+  // Determine line style — same logic as before, matches data model
+  const getLineStyle = (partIdx: number, lineIdx: number) => {
+    const line = FINALE_PARTS[partIdx]?.lines[lineIdx];
+    return line?.style ?? "body";
+  };
+
+  const renderLine = (text: string, partIdx: number, lineIdx: number, key: string) => {
+    const style = getLineStyle(partIdx, lineIdx);
+    return (
+      <p
+        key={key}
+        className="text-center w-full"
+        style={{
+          fontFamily:
+            style === "quote" || style === "emphasis" ? "var(--font-hand)" : "var(--font-body)",
+          fontStyle: style === "body" ? "italic" : "normal",
+          fontSize: style === "emphasis" ? "24px" : style === "quote" ? "20px" : "18px",
+          color:
+            style === "emphasis"
+              ? "#e879f9"
+              : style === "quote"
+              ? "var(--accent-secondary)"
+              : "var(--text-primary)",
+          lineHeight: "1.7",
+          textShadow: style === "emphasis" ? "0 0 20px rgba(232,121,249,0.3)" : "none",
+          marginBottom: "0.4em",
+        }}
+      >
+        {text}
+      </p>
+    );
+  };
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center overflow-hidden"
+      className="fixed inset-0 flex flex-col overflow-y-auto"
       style={{ background: "var(--bg-primary)" }}
     >
-      {/* Ambient embient glow — subtle, doesn't compete with text */}
+      {/* Ambient glow */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="fixed inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 60% 50% at 50% 45%, rgba(159,122,234,0.06) 0%, transparent 70%)",
+            "radial-gradient(ellipse 60% 50% at 50% 30%, rgba(159,122,234,0.05) 0%, transparent 70%)",
+          zIndex: 0,
         }}
       />
 
-      {/* Floating ambient stars — very sparse, just enough to feel alive */}
-      <div className="absolute inset-0 pointer-events-none">
-        {Array.from({ length: 18 }).map((_, i) => (
+      {/* Sparse ambient stars */}
+      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
+        {Array.from({ length: 14 }).map((_, i) => (
           <motion.div
             key={i}
             className="absolute rounded-full"
             style={{
               width: "2px",
               height: "2px",
-              left: `${(i * 37) % 100}%`,
-              top: `${(i * 53) % 100}%`,
+              left: `${(i * 41) % 100}%`,
+              top: `${(i * 61) % 100}%`,
               backgroundColor: "var(--text-muted)",
             }}
-            animate={{ opacity: [0.1, 0.4, 0.1] }}
-            transition={{
-              duration: 3 + (i % 5),
-              repeat: Infinity,
-              delay: i * 0.3,
-              ease: "easeInOut",
-            }}
+            animate={{ opacity: [0.1, 0.35, 0.1] }}
+            transition={{ duration: 3 + (i % 5), repeat: Infinity, delay: i * 0.3, ease: "easeInOut" }}
           />
         ))}
       </div>
 
       {/* Idle — begin button */}
       {playback === "idle" && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          className="relative z-10 flex flex-col items-center gap-6 text-center px-6"
-        >
-          <span style={{ fontSize: "32px" }}>🦊</span>
-          <p
-            className="font-hand text-lg"
-            style={{ color: "var(--text-secondary)" }}
+        <div className="relative z-10 flex-1 flex items-center justify-center px-6">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            className="flex flex-col items-center gap-6 text-center"
           >
-            one last thing before you go
-          </p>
-          <motion.button
-            onClick={handleBegin}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="font-display text-xs tracking-widest px-8 py-3.5 rounded-full"
-            style={{
-              background: "linear-gradient(135deg, rgba(159,122,234,0.18), rgba(58,169,255,0.12))",
-              border: "1px solid var(--border-accent)",
-              color: "var(--text-primary)",
-              boxShadow: "0 0 24px var(--accent-glow)",
-            }}
-          >
-            ✦ BEGIN
-          </motion.button>
-        </motion.div>
-      )}
-
-      {/* Playing — part label or line, one at a time */}
-      {playback === "playing" && (
-        <div className="relative z-10 w-full max-w-lg px-8 flex items-center justify-center" style={{ minHeight: "40vh" }}>
-          <AnimatePresence mode="wait">
-            {lineIndex === -1 && visible && (
-              <motion.p
-                key={`label-${partIndex}`}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: FADE_MS / 1000, ease: "easeInOut" }}
-                className="font-hand text-center w-full"
-                style={{
-                  fontSize: "20px",
-                  color: "var(--text-muted)",
-                  letterSpacing: "0.02em",
-                }}
-              >
-                {currentPart?.label}
-              </motion.p>
-            )}
-
-            {currentLine && visible && (
-              <motion.p
-                key={`line-${partIndex}-${lineIndex}`}
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: FADE_MS / 1000, ease: "easeInOut" }}
-                className="text-center w-full"
-                style={{
-                  fontFamily:
-                    currentLine.style === "quote" || currentLine.style === "emphasis"
-                      ? "var(--font-hand)"
-                      : "var(--font-body)",
-                  fontStyle: currentLine.style === "body" || !currentLine.style ? "italic" : "normal",
-                  fontSize:
-                    currentLine.style === "emphasis"
-                      ? "26px"
-                      : currentLine.style === "quote"
-                      ? "22px"
-                      : "20px",
-                  color:
-                    currentLine.style === "emphasis"
-                      ? "#e879f9"
-                      : currentLine.style === "quote"
-                      ? "var(--accent-secondary)"
-                      : "var(--text-primary)",
-                  lineHeight: "1.7",
-                  textShadow:
-                    currentLine.style === "emphasis"
-                      ? "0 0 24px rgba(232,121,249,0.35)"
-                      : "none",
-                }}
-              >
-                {currentLine.text}
-              </motion.p>
-            )}
-          </AnimatePresence>
+            <span style={{ fontSize: "32px" }}>🦊</span>
+            <p className="font-hand text-lg" style={{ color: "var(--text-secondary)" }}>
+              one last thing before you go
+            </p>
+            <motion.button
+              onClick={handleBegin}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="font-display text-xs tracking-widest px-8 py-3.5 rounded-full"
+              style={{
+                background: "linear-gradient(135deg, rgba(159,122,234,0.18), rgba(58,169,255,0.12))",
+                border: "1px solid var(--border-accent)",
+                color: "var(--text-primary)",
+                boxShadow: "0 0 24px var(--accent-glow)",
+              }}
+            >
+              ✦ BEGIN
+            </motion.button>
+          </motion.div>
         </div>
       )}
 
-      {/* Done — final lingering state */}
-      {playback === "done" && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.2 }}
-          className="relative z-10 flex flex-col items-center gap-5 text-center px-8"
-        >
-          <motion.span
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 2.5, repeat: Infinity }}
-            style={{ fontSize: "40px" }}
-          >
-            🦊🤍
-          </motion.span>
-          <p
-            className="font-hand text-2xl"
-            style={{ color: "var(--accent-warm)" }}
-          >
-            thank you for being you
-          </p>
-        </motion.div>
+      {/* Playing / Done — stacked parts, nothing ever disappears */}
+      {(playback === "playing" || playback === "done") && (
+        <div className="relative z-10 w-full max-w-lg mx-auto px-8 py-16 flex flex-col gap-10">
+          {completedParts.map((lines, partIdx) => (
+            <div key={`part-${partIdx}`} className="flex flex-col items-center">
+              <p
+                className="font-hand text-center mb-3"
+                style={{ fontSize: "14px", color: "var(--text-muted)", opacity: 0.6 }}
+              >
+                {FINALE_PARTS[partIdx].label}
+              </p>
+              {lines.map((text, lineIdx) => renderLine(text, partIdx, lineIdx, `${partIdx}-${lineIdx}`))}
+            </div>
+          ))}
+
+          {/* Currently typing part */}
+          {typingPartIndex >= 0 && (
+            <div className="flex flex-col items-center">
+              <p
+                className="font-hand text-center mb-3"
+                style={{ fontSize: "14px", color: "var(--text-muted)", opacity: 0.6 }}
+              >
+                {FINALE_PARTS[typingPartIndex].label}
+              </p>
+              {typedLines.map((text, lineIdx) =>
+                renderLine(text, typingPartIndex, lineIdx, `typing-${lineIdx}`)
+              )}
+              {/* Currently-typing line, partial */}
+              {currentLineChars > 0 && (
+                <p
+                  className="text-center w-full"
+                  style={{
+                    fontFamily:
+                      getLineStyle(typingPartIndex, typedLines.length) === "quote" ||
+                      getLineStyle(typingPartIndex, typedLines.length) === "emphasis"
+                        ? "var(--font-hand)"
+                        : "var(--font-body)",
+                    fontStyle:
+                      getLineStyle(typingPartIndex, typedLines.length) === "body" ? "italic" : "normal",
+                    fontSize:
+                      getLineStyle(typingPartIndex, typedLines.length) === "emphasis"
+                        ? "24px"
+                        : getLineStyle(typingPartIndex, typedLines.length) === "quote"
+                        ? "20px"
+                        : "18px",
+                    color:
+                      getLineStyle(typingPartIndex, typedLines.length) === "emphasis"
+                        ? "#e879f9"
+                        : getLineStyle(typingPartIndex, typedLines.length) === "quote"
+                        ? "var(--accent-secondary)"
+                        : "var(--text-primary)",
+                    lineHeight: "1.7",
+                    marginBottom: "0.4em",
+                  }}
+                >
+                  {FINALE_PARTS[typingPartIndex].lines[typedLines.length]?.text.slice(0, currentLineChars)}
+                  <motion.span
+                    animate={{ opacity: [1, 0] }}
+                    transition={{ duration: 0.5, repeat: Infinity }}
+                    style={{ opacity: 0.6 }}
+                  >
+                    |
+                  </motion.span>
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Done state — closing line */}
+          {playback === "done" && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 1 }}
+              className="flex flex-col items-center gap-4 pt-8"
+            >
+              <motion.span
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 2.5, repeat: Infinity }}
+                style={{ fontSize: "36px" }}
+              >
+                🦊🤍
+              </motion.span>
+              <p className="font-hand text-xl" style={{ color: "var(--accent-warm)" }}>
+                thank you for being you
+              </p>
+            </motion.div>
+          )}
+
+          <div ref={scrollAnchorRef} />
+        </div>
       )}
     </div>
   );
