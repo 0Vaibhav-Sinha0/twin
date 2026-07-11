@@ -15,18 +15,18 @@ export default function NicknameCard({ thought, index }: NicknameCardProps) {
 
   return (
     <div
-      className="relative flex items-center justify-center mx-auto w-full"
-      style={{ minHeight: "76px", maxWidth: "280px" }}
+      className="relative flex items-center w-full"
+      style={{ minHeight: "72px", padding: "0 12%" }}
     >
-      {/* Left card slot — fixed width, close to spine */}
-      <div className="flex justify-end" style={{ width: "118px" }}>
+      {/* Left half — card sized to its own content, pushed toward spine */}
+      <div className="flex-1 flex justify-end pr-3">
         {isLeft && (
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.6, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-            style={{ width: "100%" }}
+            style={{ display: "inline-block", maxWidth: "100%" }}
           >
             <Card thought={thought} colors={colors} align="right" />
           </motion.div>
@@ -43,21 +43,20 @@ export default function NicknameCard({ thought, index }: NicknameCardProps) {
         style={{
           width: "8px",
           height: "8px",
-          margin: "0 8px",
           background: colors.text,
           boxShadow: `0 0 10px ${colors.glow}, 0 0 20px ${colors.glow}`,
         }}
       />
 
-      {/* Right card slot — fixed width, close to spine */}
-      <div className="flex justify-start" style={{ width: "118px" }}>
+      {/* Right half — card sized to its own content, pushed toward spine */}
+      <div className="flex-1 flex justify-start pl-3">
         {!isLeft && (
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.6, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-            style={{ width: "100%" }}
+            style={{ display: "inline-block", maxWidth: "100%" }}
           >
             <Card thought={thought} colors={colors} align="left" />
           </motion.div>
@@ -78,21 +77,23 @@ function Card({
 }) {
   return (
     <div
-      className="rounded-2xl px-3 py-2.5 transition-shadow duration-300"
+      className="rounded-2xl px-4 py-2.5 transition-shadow duration-300 inline-block"
       style={{
         background: colors.bg,
         border: `1px solid ${colors.border}`,
         boxShadow: `0 0 14px ${colors.glow}, 0 4px 14px rgba(0,0,0,0.4)`,
         textAlign: align,
         backdropFilter: "blur(12px)",
+        maxWidth: "150px",
       }}
     >
       <p
         className="font-hand"
         style={{
-          fontSize: "16px",
+          fontSize: "17px",
           color: colors.text,
           lineHeight: "1.35",
+          whiteSpace: "nowrap",
         }}
       >
         {thought.text}
