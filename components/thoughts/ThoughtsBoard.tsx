@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { THOUGHTS } from "@/data/thoughts";
-import StickyNote from "./StickyNote";
+import NicknameCard from "./NicknameCard";
 
 const NO_RESPONSES = [
   "wrong answer twin ☠️",
@@ -12,36 +12,20 @@ const NO_RESPONSES = [
   "this is not the response i prepared for.",
 ];
 
-function seedToPosition(seed: number, index: number, total: number) {
-  const cols = 4;
-  const rows = Math.ceil(total / cols);
-  const col = index % cols;
-  const row = Math.floor(index / cols);
-  const zoneW = 100 / cols;
-  const zoneH = 100 / rows;
-  const xBase = col * zoneW + zoneW * 0.1;
-  const yBase = row * zoneH + zoneH * 0.1;
-  const xOffset = seed * zoneW * 0.7;
-  const yOffset = ((seed * 7.3) % 1) * zoneH * 0.6;
-  return {
-    left: `${Math.min(xBase + xOffset, 88)}%`,
-    top: `${Math.min(yBase + yOffset, 85)}%`,
-  };
-}
-
 export default function ThoughtsBoard() {
-  const [shuffleKey, setShuffleKey] = useState(0);
+  const [shuffledThoughts, setShuffledThoughts] = useState(THOUGHTS);
   const [unlockState, setUnlockState] = useState<"idle" | "unlocked" | "no">("idle");
   const [noResponse, setNoResponse] = useState("");
   const [noCount, setNoCount] = useState(0);
 
-  const positions = useMemo(() => {
-    return THOUGHTS.map((t, i) =>
-      seedToPosition(t.seed + shuffleKey * 0.13, i, THOUGHTS.length)
-    );
-  }, [shuffleKey]);
-
-  const boardHeight = Math.max(900, Math.ceil(THOUGHTS.length / 4) * 280 + 200);
+  const handleShuffle = () => {
+    const shuffled = [...shuffledThoughts];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    setShuffledThoughts(shuffled);
+  };
 
   const handleNo = () => {
     const next = noCount + 1;
@@ -101,7 +85,7 @@ export default function ThoughtsBoard() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            onClick={() => setShuffleKey((k) => k + 1)}
+            onClick={handleShuffle}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.96 }}
             className="mt-5 font-display text-xs tracking-widest px-6 py-2.5 rounded-full transition-all"
@@ -116,19 +100,55 @@ export default function ThoughtsBoard() {
           </motion.button>
         </div>
 
-        {/* Board — notes float freely */}
+        {/* Nickname spine — alternating cards connected to a central line */}
         <div
-          className="relative w-full px-4"
-          style={{ height: `${boardHeight}px` }}
+          className="relative mx-auto px-2"
+          style={{ maxWidth: "480px", paddingBottom: "60px" }}
         >
-          {THOUGHTS.map((thought, i) => (
-            <StickyNote
-              key={`${thought.id}-${shuffleKey}`}
-              thought={thought}
-              style={positions[i]}
-              delay={i * 0.06}
-            />
-          ))}
+          {/* Gradient centre spine */}
+          <div
+            className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2"
+            style={{
+              width: "2px",
+              background:
+                "linear-gradient(to bottom, #fbbf24 0%, #f472b6 30%, #a78bfa 60%, #60a5fa 100%)",
+              opacity: 0.4,
+              borderRadius: "1px",
+            }}
+          />
+
+          <div className="relative flex flex-col gap-2 pt-4">
+            <AnimatePresence mode="popLayout">
+              {shuffledThoughts.map((thought, i) => (
+                <motion.div
+                  key={thought.id}
+                  layout
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <NicknameCard thought={thought} index={i} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+
+          {/* End cap */}
+          <div className="flex flex-col items-center gap-3 pt-6">
+            <div
+              className="rounded-full flex items-center justify-center"
+              style={{
+                width: "36px",
+                height: "36px",
+                background: "linear-gradient(135deg, #60a5fa33, #a78bfa33)",
+                border: "1px solid rgba(167,139,250,0.4)",
+                fontSize: "18px",
+              }}
+            >
+              🦊
+            </div>
+          </div>
         </div>
 
         {/* ── Locked nickname section ─────────────────────────────── */}
