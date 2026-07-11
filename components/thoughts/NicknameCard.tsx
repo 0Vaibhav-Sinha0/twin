@@ -14,16 +14,19 @@ export default function NicknameCard({ thought, index }: NicknameCardProps) {
   const colors = THOUGHT_COLORS[thought.color];
 
   return (
-    <div className="relative flex items-center justify-center w-full" style={{ minHeight: "84px" }}>
-      {/* Left card slot — capped width so card hugs the spine */}
-      <div className="flex justify-end" style={{ width: "38%" }}>
+    <div
+      className="relative flex items-center justify-center mx-auto w-full"
+      style={{ minHeight: "84px", maxWidth: "340px" }}
+    >
+      {/* Left card slot — fixed width, close to spine */}
+      <div className="flex justify-end" style={{ width: "150px" }}>
         {isLeft && (
           <motion.div
             initial={{ opacity: 0, x: -24 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.6, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-            style={{ maxWidth: "160px", width: "100%" }}
+            style={{ width: "100%" }}
           >
             <Card thought={thought} colors={colors} align="right" />
           </motion.div>
@@ -40,20 +43,21 @@ export default function NicknameCard({ thought, index }: NicknameCardProps) {
         style={{
           width: "10px",
           height: "10px",
+          margin: "0 12px",
           background: colors.text,
           boxShadow: `0 0 10px ${colors.glow}, 0 0 20px ${colors.glow}`,
         }}
       />
 
-      {/* Right card slot — capped width so card hugs the spine */}
-      <div className="flex justify-start" style={{ width: "38%" }}>
+      {/* Right card slot — fixed width, close to spine */}
+      <div className="flex justify-start" style={{ width: "150px" }}>
         {!isLeft && (
           <motion.div
             initial={{ opacity: 0, x: 24 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.6, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-            style={{ maxWidth: "160px", width: "100%" }}
+            style={{ width: "100%" }}
           >
             <Card thought={thought} colors={colors} align="left" />
           </motion.div>
