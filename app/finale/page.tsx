@@ -1,0 +1,13 @@
+import FinaleSequence from "@/components/finale/FinaleSequence";
+import BottomDock from "@/components/shared/BottomDock";
+import ThemeToggle from "@/components/shared/ThemeToggle";
+
+export default function FinalePage() {
+  return (
+    <main>
+      <FinaleSequence />
+      <ThemeToggle />
+      <BottomDock />
+    </main>
+  );
+}

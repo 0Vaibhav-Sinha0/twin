@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { href: "/games",         icon: "🎮",  label: "Games"         },
   { href: "/thoughts",      icon: "💭",  label: "Nicknames"      },
   { href: "/constellation", icon: "🌌",  label: "Stars"         },
+  { href: "/finale",        icon: "🦊",  label: "For You"       },
 ];
 
 export default function BottomDock() {
