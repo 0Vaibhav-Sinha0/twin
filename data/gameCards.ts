@@ -10,55 +10,53 @@ export type GameCard = {
   glowColor: string;
 };
 
-// 8 pairs — 4 emoji + 4 Cinzel initial
+// 8 pairs — all emoji
 export const CARD_PAIRS: Omit<GameCard, "id">[] = [
-  // ── Emoji pairs ──────────────────────────────────
   {
     pairId: "p1",
-    face: { type: "emoji", symbol: "🦊", label: "Fox" },
-    color: "#ea580c",
-    glowColor: "rgba(234,88,12,0.4)",
-  },
-  {
-    pairId: "p2",
-    face: { type: "emoji", symbol: "🌸", label: "Blossom" },
-    color: "#f472b6",
-    glowColor: "rgba(244,114,182,0.4)",
-  },
-  {
-    pairId: "p3",
     face: { type: "emoji", symbol: "🌙", label: "Moon" },
     color: "#a78bfa",
     glowColor: "rgba(167,139,250,0.4)",
   },
   {
-    pairId: "p4",
-    face: { type: "emoji", symbol: "⭐", label: "Star" },
-    color: "#fbbf24",
-    glowColor: "rgba(251,191,36,0.4)",
+    pairId: "p2",
+    face: { type: "emoji", symbol: "🦊", label: "Fox" },
+    color: "#ea580c",
+    glowColor: "rgba(234,88,12,0.4)",
   },
-  // ── Cinzel initial pairs ─────────────────────────
   {
-    pairId: "p5",
-    face: { type: "initial", letter: "T", label: "Twin" },
+    pairId: "p3",
+    face: { type: "emoji", symbol: "🌸", label: "Blossom" },
+    color: "#f472b6",
+    glowColor: "rgba(244,114,182,0.4)",
+  },
+  {
+    pairId: "p4",
+    face: { type: "emoji", symbol: "💬", label: "Chat" },
     color: "#3aa9ff",
     glowColor: "rgba(58,169,255,0.4)",
   },
   {
+    pairId: "p5",
+    face: { type: "emoji", symbol: "🎂", label: "Cake" },
+    color: "#fb923c",
+    glowColor: "rgba(251,146,60,0.4)",
+  },
+  {
     pairId: "p6",
-    face: { type: "initial", letter: "N", label: "Nandani" },
+    face: { type: "emoji", symbol: "⭐", label: "Star" },
+    color: "#fbbf24",
+    glowColor: "rgba(251,191,36,0.4)",
+  },
+  {
+    pairId: "p7",
+    face: { type: "emoji", symbol: "🎵", label: "Music" },
     color: "#34d399",
     glowColor: "rgba(52,211,153,0.4)",
   },
   {
-    pairId: "p7",
-    face: { type: "initial", letter: "V", label: "Vaibhav" },
-    color: "#f87171",
-    glowColor: "rgba(248,113,113,0.4)",
-  },
-  {
     pairId: "p8",
-    face: { type: "initial", letter: "✦", label: "Us" },
+    face: { type: "emoji", symbol: "💕", label: "Love" },
     color: "#e879f9",
     glowColor: "rgba(232,121,249,0.4)",
   },
