@@ -118,7 +118,8 @@ export default function FinaleSequence({ onFutureRevealed }: { onFutureRevealed?
     }, INITIAL_PAUSE_MS);
   }, [typeOutPart]);
 
-  // Fade out music when done, then reveal "The Future" after a 5s silent pause
+  // Fade out music once the message sequence finishes typing.
+  // "The Future" no longer auto-triggers — she controls the pace via a Next button.
   useEffect(() => {
     if (playback === "done" && audioRef.current) {
       const audio = audioRef.current;
@@ -133,14 +134,12 @@ export default function FinaleSequence({ onFutureRevealed }: { onFutureRevealed?
         audio.volume = vol;
       }, 200);
     }
-    if (playback === "done") {
-      const futureTimer = setTimeout(() => {
-        setShowFuture(true);
-        onFutureRevealed?.();
-      }, 5000);
-      return () => clearTimeout(futureTimer);
-    }
-  }, [playback, onFutureRevealed]);
+  }, [playback]);
+
+  const handleContinueToFuture = useCallback(() => {
+    setShowFuture(true);
+    onFutureRevealed?.();
+  }, [onFutureRevealed]);
 
   useEffect(() => clearTimers, [clearTimers]);
 
@@ -310,7 +309,7 @@ export default function FinaleSequence({ onFutureRevealed }: { onFutureRevealed?
             </div>
           )}
 
-          {/* Done state — closing line */}
+          {/* Done state — closing line + manual continue */}
           {playback === "done" && (
             <motion.div
               initial={{ opacity: 0, y: 12 }}
@@ -328,6 +327,25 @@ export default function FinaleSequence({ onFutureRevealed }: { onFutureRevealed?
               <p className="font-hand text-xl" style={{ color: "var(--accent-warm)" }}>
                 thank you for being you
               </p>
+
+              {/* Take your time — button only appears once everything has finished typing */}
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 2.5, duration: 1 }}
+                onClick={handleContinueToFuture}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="font-display text-xs tracking-widest px-8 py-3.5 rounded-full mt-6"
+                style={{
+                  background: "linear-gradient(135deg, rgba(159,122,234,0.18), rgba(58,169,255,0.12))",
+                  border: "1px solid var(--border-accent)",
+                  color: "var(--text-primary)",
+                  boxShadow: "0 0 24px var(--accent-glow)",
+                }}
+              >
+                NEXT ✦
+              </motion.button>
             </motion.div>
           )}
 
