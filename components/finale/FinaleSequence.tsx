@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { FINALE_PARTS } from "@/data/finale";
+import FutureReveal from "@/components/future/FutureReveal";
 
 // Typewriter speed — fast, ms per character
 const TYPE_SPEED_MS = 18;
@@ -19,12 +20,13 @@ function partToText(partIndex: number): string[] {
   return FINALE_PARTS[partIndex].lines.map((l) => l.text);
 }
 
-export default function FinaleSequence() {
+export default function FinaleSequence({ onFutureRevealed }: { onFutureRevealed?: () => void }) {
   const [playback, setPlayback] = useState<PlaybackState>("idle");
   const [completedParts, setCompletedParts] = useState<string[][]>([]);
   const [typingPartIndex, setTypingPartIndex] = useState(-1);
   const [typedLines, setTypedLines] = useState<string[]>([]);
   const [currentLineChars, setCurrentLineChars] = useState(0);
+  const [showFuture, setShowFuture] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const scrollAnchorRef = useRef<HTMLDivElement>(null);
@@ -116,7 +118,7 @@ export default function FinaleSequence() {
     }, INITIAL_PAUSE_MS);
   }, [typeOutPart]);
 
-  // Fade out music when done
+  // Fade out music when done, then reveal "The Future" after a 5s silent pause
   useEffect(() => {
     if (playback === "done" && audioRef.current) {
       const audio = audioRef.current;
@@ -131,7 +133,14 @@ export default function FinaleSequence() {
         audio.volume = vol;
       }, 200);
     }
-  }, [playback]);
+    if (playback === "done") {
+      const futureTimer = setTimeout(() => {
+        setShowFuture(true);
+        onFutureRevealed?.();
+      }, 5000);
+      return () => clearTimeout(futureTimer);
+    }
+  }, [playback, onFutureRevealed]);
 
   useEffect(() => clearTimers, [clearTimers]);
 
@@ -323,6 +332,13 @@ export default function FinaleSequence() {
           )}
 
           <div ref={scrollAnchorRef} />
+        </div>
+      )}
+
+      {/* The Future — replaces everything once revealed, no way back */}
+      {showFuture && (
+        <div className="fixed inset-0" style={{ zIndex: 100 }}>
+          <FutureReveal />
         </div>
       )}
     </div>
