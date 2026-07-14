@@ -1,15 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import GardenCanvas from "./GardenCanvas";
+import BouquetScene from "./BouquetScene";
 
 export default function MagicalGarden() {
   return (
-    <div
-      className="fixed inset-0 flex flex-col"
-      style={{ backgroundColor: "var(--bg-primary)", zIndex: 0 }}
-    >
-      {/* Page header — floats over canvas */}
+    <div className="fixed inset-0 flex flex-col" style={{ zIndex: 0 }}>
+      {/* Page header — floats over the bouquet */}
       <div className="absolute top-0 left-0 right-0 z-10 pt-10 pb-4 text-center pointer-events-none">
         <motion.p
           initial={{ opacity: 0, y: -8 }}
@@ -18,7 +15,7 @@ export default function MagicalGarden() {
           className="font-hand text-sm mb-1"
           style={{ color: "rgba(122,74,36,0.55)" }}
         >
-          a quiet place to breathe
+          gathered, tied, and picked just for you
         </motion.p>
         <motion.h1
           initial={{ opacity: 0, y: -12 }}
@@ -27,7 +24,7 @@ export default function MagicalGarden() {
           className="font-display text-3xl tracking-widest"
           style={{
             color: "#5a3a1f",
-            textShadow: "0 0 24px rgba(255,255,255,0.4)",
+            textShadow: "0 0 24px rgba(255,255,255,0.5)",
           }}
         >
           The Garden
@@ -38,16 +35,16 @@ export default function MagicalGarden() {
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 1.4 }}
+        transition={{ duration: 0.8, delay: 1.6 }}
         className="absolute bottom-24 left-0 right-0 text-center font-hand text-sm z-10 pointer-events-none"
         style={{ color: "rgba(122,74,36,0.4)" }}
       >
-        tap the meadow ✦
+        tap to release a few petals ✦
       </motion.p>
 
-      {/* Garden canvas — fills everything */}
+      {/* Bouquet — fills everything */}
       <div className="flex-1 relative" style={{ paddingBottom: "72px" }}>
-        <GardenCanvas />
+        <BouquetScene />
       </div>
     </div>
   );
