@@ -4,35 +4,28 @@ import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ─────────────────────────────────────────────────────────────────
-// A single, hand-composed flower bouquet. Not a scattered field —
-// one deliberate, gathered arrangement: roses in front, peonies
-// and ranunculus filling in, eucalyptus framing the edges, wrapped
-// in kraft paper and tied with ribbon. Every petal is a real bezier
-// shape with base-to-tip shading, not a canvas ellipse.
+// A dense, classic bouquet of red roses — one flower type, bundled
+// tightly into a mound, wrapped in simple white paper, tied with a
+// red ribbon. Matches a real bouquet's silhouette: full, uniform,
+// no visual clutter.
 // ─────────────────────────────────────────────────────────────────
 
 const C = {
-  roseBase: "#a84f66", roseMid: "#e08ba0", roseTip: "#fbe4ea",
-  peonyBase: "#d99ba3", peonyMid: "#f3d9d9", peonyTip: "#fef8f0",
-  ranABase: "#c98454", ranAMid: "#eeb888", ranATip: "#fce8cf",
-  ranBBase: "#c06c86", ranBMid: "#e8a3b8", ranBTip: "#fbe0e6",
-  leafBase: "#4f6b40", leafMid: "#7c9c63", leafTip: "#a8c48f",
-  stem: "#5f7d4f",
-  wrapBase: "#c7a179", wrapMid: "#dcbd96", wrapTip: "#ecd7b8",
-  ribbon: "#b96e84", ribbonDark: "#8f5064",
-  centerDark: "#6b3a2a", centerGold: "#d4af7a",
+  wrapA: "#fffaf5", wrapB: "#f5ece0", wrapC: "#e8dac8",
+  ribbon: "#d43f3f", ribbonDark: "#a3222a",
+  centerShadow: "#4a0d14",
 };
+
+// Two rose colour variants for subtle natural variation across the cluster
+const ROSE_GRADIENTS = ["roseGradA", "roseGradB"] as const;
 
 // ── Shape primitives ──────────────────────────────────────────────
 
-function petalPath(length: number, width: number): string {
-  return `M 0,0 C ${-width},${-length * 0.28} ${-width * 0.85},${-length * 0.78} 0,${-length} C ${width * 0.85},${-length * 0.78} ${width},${-length * 0.28} 0,0 Z`;
-}
-
-function stemPath(fromX: number, fromY: number, toX: number, toY: number): string {
-  const midX = (fromX + toX) / 2 + (toX - fromX) * 0.12;
-  const midY = (fromY + toY) / 2 + 6;
-  return `M ${fromX},${fromY} Q ${midX},${midY} ${toX},${toY}`;
+// Rounder, cupped petal — real rose petals curl and fold, they don't
+// taper to a sharp point like a tulip.
+function rosePetalPath(length: number, width: number): string {
+  const flat = width * 0.32;
+  return `M 0,0 C ${-width},${-length * 0.25} ${-width},${-length * 0.75} ${-flat},${-length} Q 0,${-length * 1.05} ${flat},${-length} C ${width},${-length * 0.75} ${width},${-length * 0.25} 0,0 Z`;
 }
 
 interface Ring {
@@ -42,10 +35,16 @@ interface Ring {
   petalWidth: number;
   rotationOffset: number;
   gradientId: string;
-  opacity?: number;
 }
 
-function FlowerHead({ rings, centerColor, centerRadius = 5 }: { rings: Ring[]; centerColor: string; centerRadius?: number }) {
+function RoseHead({ gradient }: { gradient: string }) {
+  const rings: Ring[] = [
+    { count: 5, radiusStart: 15, petalLength: 17, petalWidth: 15, rotationOffset: 0, gradientId: gradient },
+    { count: 6, radiusStart: 10, petalLength: 15, petalWidth: 13, rotationOffset: 22, gradientId: gradient },
+    { count: 6, radiusStart: 6, petalLength: 12, petalWidth: 11, rotationOffset: 40, gradientId: gradient },
+    { count: 5, radiusStart: 3, petalLength: 9, petalWidth: 8, rotationOffset: 15, gradientId: gradient },
+    { count: 4, radiusStart: 0.5, petalLength: 5.5, petalWidth: 5, rotationOffset: 35, gradientId: gradient },
+  ];
   return (
     <g>
       {rings.map((ring, ri) => (
@@ -54,137 +53,52 @@ function FlowerHead({ rings, centerColor, centerRadius = 5 }: { rings: Ring[]; c
             const angle = (360 / ring.count) * i + ring.rotationOffset;
             return (
               <g key={i} transform={`rotate(${angle}) translate(0, ${-ring.radiusStart})`}>
-                <path d={petalPath(ring.petalLength, ring.petalWidth)} fill={`url(#${ring.gradientId})`} opacity={ring.opacity ?? 1} />
+                <path d={rosePetalPath(ring.petalLength, ring.petalWidth)} fill={`url(#${ring.gradientId})`} />
               </g>
             );
           })}
         </g>
       ))}
-      <circle r={centerRadius} fill={centerColor} />
-      <circle r={centerRadius * 0.4} fill={C.centerGold} opacity={0.7} />
+      <circle r={1.6} fill={C.centerShadow} />
     </g>
   );
 }
 
-function Rose() {
-  return (
-    <FlowerHead
-      centerColor={C.centerDark}
-      centerRadius={4}
-      rings={[
-        { count: 6, radiusStart: 13, petalLength: 21, petalWidth: 15, rotationOffset: 0, gradientId: "roseGrad" },
-        { count: 6, radiusStart: 7, petalLength: 17, petalWidth: 12, rotationOffset: 30, gradientId: "roseGrad" },
-        { count: 5, radiusStart: 2, petalLength: 11, petalWidth: 8, rotationOffset: 15, gradientId: "roseGradInner" },
-      ]}
-    />
-  );
-}
+// ── Composition — a dense, hand-packed dome of roses ───────────────
 
-function Peony() {
-  return (
-    <FlowerHead
-      centerColor={C.centerGold}
-      centerRadius={4}
-      rings={[
-        { count: 7, radiusStart: 15, petalLength: 23, petalWidth: 19, rotationOffset: 0, gradientId: "peonyGrad" },
-        { count: 7, radiusStart: 9, petalLength: 19, petalWidth: 16, rotationOffset: 26, gradientId: "peonyGrad" },
-        { count: 6, radiusStart: 4, petalLength: 14, petalWidth: 12, rotationOffset: 10, gradientId: "peonyGradInner" },
-        { count: 5, radiusStart: 1, petalLength: 8, petalWidth: 7, rotationOffset: 40, gradientId: "peonyGradInner" },
-      ]}
-    />
-  );
-}
+interface RosePlacement { x: number; y: number; rotate: number; scale: number; variant: 0 | 1; }
 
-function Ranunculus({ variant }: { variant: "a" | "b" }) {
-  const outer = variant === "a" ? "ranAGrad" : "ranBGrad";
-  const inner = variant === "a" ? "ranAGradInner" : "ranBGradInner";
-  return (
-    <FlowerHead
-      centerColor={variant === "a" ? C.ranABase : C.ranBBase}
-      centerRadius={3}
-      rings={[
-        { count: 6, radiusStart: 8, petalLength: 11, petalWidth: 9, rotationOffset: 0, gradientId: outer },
-        { count: 6, radiusStart: 4.5, petalLength: 9, petalWidth: 7, rotationOffset: 28, gradientId: outer },
-        { count: 5, radiusStart: 2, petalLength: 6, petalWidth: 5, rotationOffset: 12, gradientId: inner },
-        { count: 4, radiusStart: 0, petalLength: 3.5, petalWidth: 3.5, rotationOffset: 40, gradientId: inner },
-      ]}
-    />
-  );
-}
+const ROSES: RosePlacement[] = [
+  // Row 1 — back, smallest
+  { x: 150, y: 148, rotate: -8, scale: 0.58, variant: 0 },
+  { x: 188, y: 144, rotate: 4, scale: 0.6, variant: 1 },
+  { x: 226, y: 148, rotate: 10, scale: 0.58, variant: 0 },
 
-function EucalyptusSprig({ length, curve }: { length: number; curve: number }) {
-  const leafPairs = 4;
-  const leaves = [];
-  for (let i = 1; i <= leafPairs; i++) {
-    const t = i / (leafPairs + 0.5);
-    const y = -length * t;
-    const x = curve * t * t;
-    const s = 1 - t * 0.35;
-    leaves.push(
-      <g key={`l${i}`} transform={`translate(${x - 6},${y}) rotate(-55) scale(${s})`}>
-        <path d={petalPath(11, 5.5)} fill="url(#leafGrad)" />
-      </g>,
-      <g key={`r${i}`} transform={`translate(${x + 6},${y}) rotate(55) scale(${s})`}>
-        <path d={petalPath(11, 5.5)} fill="url(#leafGrad)" />
-      </g>
-    );
-  }
-  return (
-    <g>
-      <path d={`M 0,0 Q ${curve * 0.5},${-length * 0.5} ${curve},${-length}`} stroke={C.stem} strokeWidth={1.6} fill="none" />
-      {leaves}
-    </g>
-  );
-}
+  // Row 2
+  { x: 118, y: 180, rotate: -14, scale: 0.72, variant: 1 },
+  { x: 158, y: 175, rotate: -3, scale: 0.76, variant: 0 },
+  { x: 197, y: 173, rotate: 6, scale: 0.78, variant: 1 },
+  { x: 236, y: 177, rotate: -5, scale: 0.75, variant: 0 },
+  { x: 270, y: 182, rotate: 12, scale: 0.7, variant: 1 },
 
-function BabysBreath() {
-  const sprigs = [
-    { x: -8, y: -14 }, { x: 9, y: -16 }, { x: 0, y: -20 }, { x: -14, y: -6 }, { x: 15, y: -8 },
-  ];
-  return (
-    <g>
-      {sprigs.map((s, i) => (
-        <g key={i}>
-          <path d={`M 0,0 L ${s.x},${s.y}`} stroke={C.leafMid} strokeWidth={0.8} fill="none" opacity={0.7} />
-          <circle cx={s.x} cy={s.y} r={2.6} fill="#fffaf2" opacity={0.95} />
-        </g>
-      ))}
-    </g>
-  );
-}
+  // Row 3
+  { x: 100, y: 216, rotate: -16, scale: 0.88, variant: 0 },
+  { x: 141, y: 209, rotate: 5, scale: 0.94, variant: 1 },
+  { x: 183, y: 206, rotate: -6, scale: 0.98, variant: 0 },
+  { x: 224, y: 209, rotate: 8, scale: 0.94, variant: 1 },
+  { x: 264, y: 215, rotate: -10, scale: 0.88, variant: 0 },
 
-// ── Composition — hand-placed, not randomized ─────────────────────
+  // Row 4 — front, larger
+  { x: 121, y: 251, rotate: -12, scale: 1.05, variant: 1 },
+  { x: 163, y: 245, rotate: 4, scale: 1.15, variant: 0 },
+  { x: 205, y: 244, rotate: -7, scale: 1.18, variant: 1 },
+  { x: 246, y: 248, rotate: 10, scale: 1.12, variant: 0 },
+  { x: 284, y: 255, rotate: -4, scale: 1.0, variant: 1 },
 
-const TIE_POINT = { x: 190, y: 398 };
-
-const ROSES = [
-  { x: 190, y: 226, rotate: 0, scale: 1.15 },
-  { x: 138, y: 252, rotate: -16, scale: 0.92 },
-  { x: 242, y: 248, rotate: 14, scale: 0.92 },
-];
-const PEONIES = [
-  { x: 92, y: 272, rotate: -22, scale: 1.02 },
-  { x: 288, y: 266, rotate: 20, scale: 1.02 },
-];
-const RANUNCULUS = [
-  { x: 163, y: 190, rotate: -8, scale: 0.85, variant: "a" as const },
-  { x: 216, y: 186, rotate: 9, scale: 0.85, variant: "b" as const },
-  { x: 118, y: 222, rotate: -14, scale: 0.75, variant: "b" as const },
-];
-const EUCALYPTUS = [
-  { x: 66, y: 338, length: 130, curve: -55 },
-  { x: 314, y: 332, length: 128, curve: 58 },
-  { x: 190, y: 278, length: 118, curve: 8 },
-];
-const FILLER = [
-  { x: 152, y: 240 }, { x: 228, y: 236 }, { x: 190, y: 205 },
-  { x: 96, y: 296 }, { x: 282, y: 296 },
-];
-
-const ALL_FLOWER_HEADS = [
-  ...ROSES.map((f) => ({ ...f, kind: "rose" as const })),
-  ...PEONIES.map((f) => ({ ...f, kind: "peony" as const })),
-  ...RANUNCULUS.map((f) => ({ ...f, kind: "ranunculus" as const })),
+  // Row 5 — very front, biggest, closest to the wrap
+  { x: 150, y: 281, rotate: 6, scale: 1.1, variant: 0 },
+  { x: 200, y: 285, rotate: -5, scale: 1.16, variant: 1 },
+  { x: 245, y: 281, rotate: 9, scale: 1.08, variant: 0 },
 ];
 
 interface Sparkle { id: number; x: number; y: number; tx: number; ty: number; color: string; }
@@ -200,15 +114,15 @@ export default function BouquetScene() {
   // Occasional single petal drifting down — rare, adds life without noise
   useEffect(() => {
     function spawnPetal() {
-      const source = ALL_FLOWER_HEADS[Math.floor(Math.random() * ALL_FLOWER_HEADS.length)];
+      const source = ROSES[Math.floor(Math.random() * ROSES.length)];
       const id = idCounter++;
       const petal: FallingPetal = {
         id,
-        x: source.x + (Math.random() - 0.5) * 20,
+        x: source.x + (Math.random() - 0.5) * 16,
         startY: source.y,
-        endY: source.y + 160 + Math.random() * 80,
+        endY: source.y + 170 + Math.random() * 90,
         drift: (Math.random() - 0.5) * 60,
-        color: [C.roseTip, C.peonyMid, C.ranBMid][Math.floor(Math.random() * 3)],
+        color: ["#e2483f", "#b9273a", "#fdf3ed"][Math.floor(Math.random() * 3)],
         duration: 4 + Math.random() * 2,
       };
       setFallingPetals((prev) => [...prev, petal]);
@@ -237,7 +151,7 @@ export default function BouquetScene() {
         x: vbX, y: vbY,
         tx: vbX + Math.cos(angle) * dist,
         ty: vbY + Math.sin(angle) * dist - 30,
-        color: [C.roseTip, C.peonyTip, C.ranATip, "#fffaf2"][Math.floor(Math.random() * 4)],
+        color: ["#e2483f", "#fdf3ed", "#fbcfc9"][Math.floor(Math.random() * 3)],
       });
     }
     setSparkles((prev) => [...prev, ...newSparkles]);
@@ -246,208 +160,75 @@ export default function BouquetScene() {
     }, 1100);
   }, []);
 
-  const bokeh = useMemo(
-    () => [
-      { left: "8%", top: "12%", size: 140, color: "rgba(242,184,198,0.35)" },
-      { left: "78%", top: "8%", size: 110, color: "rgba(212,175,122,0.3)" },
-      { left: "85%", top: "55%", size: 160, color: "rgba(224,139,160,0.25)" },
-      { left: "5%", top: "60%", size: 130, color: "rgba(143,167,122,0.28)" },
-      { left: "50%", top: "82%", size: 180, color: "rgba(236,215,184,0.3)" },
-    ],
+  const bgGradient = useMemo(
+    () => "linear-gradient(180deg, #f5f1d8 0%, #f8dfe9 55%, #f3c9db 100%)",
     []
   );
 
   return (
     <div
       className="relative w-full h-full flex items-center justify-center overflow-hidden"
-      style={{
-        background: "linear-gradient(180deg, #f6e9dc 0%, #f2ddd3 55%, #eed2ca 100%)",
-      }}
+      style={{ background: bgGradient }}
     >
-      {/* Soft bokeh backdrop */}
-      {bokeh.map((b, i) => (
-        <div
-          key={i}
-          className="absolute rounded-full pointer-events-none"
-          style={{
-            left: b.left,
-            top: b.top,
-            width: `${b.size}px`,
-            height: `${b.size}px`,
-            background: b.color,
-            filter: "blur(40px)",
-          }}
-        />
-      ))}
-
-      {/* Ground shadow */}
-      <div
-        className="absolute rounded-full pointer-events-none"
-        style={{
-          left: "50%",
-          bottom: "14%",
-          transform: "translateX(-50%)",
-          width: "180px",
-          height: "24px",
-          background: "radial-gradient(ellipse, rgba(107,58,42,0.18), transparent 70%)",
-          filter: "blur(4px)",
-        }}
-      />
-
       <motion.svg
         ref={svgRef}
         viewBox="0 0 380 480"
         className="relative z-10"
-        style={{ width: "min(78vw, 340px)", height: "auto", cursor: "pointer" }}
+        style={{ width: "min(80vw, 340px)", height: "auto", cursor: "pointer" }}
         onClick={(e) => handleTap(e.clientX, e.clientY)}
         onTouchStart={(e) => {
           const t = e.touches[0];
           if (t) handleTap(t.clientX, t.clientY);
         }}
         initial={{ opacity: 0, y: 16 }}
-        animate={{
-          opacity: 1,
-          y: [0, -4, 0],
-        }}
+        animate={{ opacity: 1, y: [0, -4, 0] }}
         transition={{
           opacity: { duration: 1.2 },
           y: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1.2 },
         }}
       >
         <defs>
-          <radialGradient id="roseGrad" cx="0.5" cy="1" r="1">
-            <stop offset="0%" stopColor={C.roseBase} />
-            <stop offset="65%" stopColor={C.roseMid} />
-            <stop offset="100%" stopColor={C.roseTip} />
+          <radialGradient id="roseGradA" cx="0.5" cy="1" r="1">
+            <stop offset="0%" stopColor="#5c0f18" />
+            <stop offset="45%" stopColor="#a81f2c" />
+            <stop offset="100%" stopColor="#e2483f" />
           </radialGradient>
-          <radialGradient id="roseGradInner" cx="0.5" cy="1" r="1">
-            <stop offset="0%" stopColor={C.roseMid} />
-            <stop offset="100%" stopColor={C.roseTip} />
+          <radialGradient id="roseGradB" cx="0.5" cy="1" r="1">
+            <stop offset="0%" stopColor="#6b1420" />
+            <stop offset="45%" stopColor="#b9273a" />
+            <stop offset="100%" stopColor="#eb5044" />
           </radialGradient>
-
-          <radialGradient id="peonyGrad" cx="0.5" cy="1" r="1">
-            <stop offset="0%" stopColor={C.peonyBase} />
-            <stop offset="65%" stopColor={C.peonyMid} />
-            <stop offset="100%" stopColor={C.peonyTip} />
-          </radialGradient>
-          <radialGradient id="peonyGradInner" cx="0.5" cy="1" r="1">
-            <stop offset="0%" stopColor={C.peonyMid} />
-            <stop offset="100%" stopColor={C.peonyTip} />
-          </radialGradient>
-
-          <radialGradient id="ranAGrad" cx="0.5" cy="1" r="1">
-            <stop offset="0%" stopColor={C.ranABase} />
-            <stop offset="60%" stopColor={C.ranAMid} />
-            <stop offset="100%" stopColor={C.ranATip} />
-          </radialGradient>
-          <radialGradient id="ranAGradInner" cx="0.5" cy="1" r="1">
-            <stop offset="0%" stopColor={C.ranAMid} />
-            <stop offset="100%" stopColor={C.ranATip} />
-          </radialGradient>
-          <radialGradient id="ranBGrad" cx="0.5" cy="1" r="1">
-            <stop offset="0%" stopColor={C.ranBBase} />
-            <stop offset="60%" stopColor={C.ranBMid} />
-            <stop offset="100%" stopColor={C.ranBTip} />
-          </radialGradient>
-          <radialGradient id="ranBGradInner" cx="0.5" cy="1" r="1">
-            <stop offset="0%" stopColor={C.ranBMid} />
-            <stop offset="100%" stopColor={C.ranBTip} />
-          </radialGradient>
-
-          <radialGradient id="leafGrad" cx="0.5" cy="1" r="1">
-            <stop offset="0%" stopColor={C.leafBase} />
-            <stop offset="70%" stopColor={C.leafMid} />
-            <stop offset="100%" stopColor={C.leafTip} />
-          </radialGradient>
-
           <linearGradient id="wrapGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor={C.wrapTip} />
-            <stop offset="50%" stopColor={C.wrapMid} />
-            <stop offset="100%" stopColor={C.wrapBase} />
+            <stop offset="0%" stopColor={C.wrapA} />
+            <stop offset="55%" stopColor={C.wrapB} />
+            <stop offset="100%" stopColor={C.wrapC} />
           </linearGradient>
         </defs>
 
         {/* ── Wrap (paper cone) ── */}
         <path
-          d="M 120,388 Q 190,410 260,388 L 235,478 Q 190,490 145,478 Z"
+          d="M 105,308 Q 195,338 285,308 L 250,468 Q 195,484 140,468 Z"
           fill="url(#wrapGrad)"
-          stroke="rgba(122,74,36,0.15)"
+          stroke="rgba(122,90,60,0.15)"
           strokeWidth={1}
         />
-        <path d="M 150,400 L 175,470" stroke="rgba(122,74,36,0.12)" strokeWidth={1} fill="none" />
-        <path d="M 190,405 L 195,475" stroke="rgba(122,74,36,0.12)" strokeWidth={1} fill="none" />
-        <path d="M 230,400 L 210,470" stroke="rgba(122,74,36,0.12)" strokeWidth={1} fill="none" />
+        <path d="M 145,320 L 168,462" stroke="rgba(122,90,60,0.1)" strokeWidth={1} fill="none" />
+        <path d="M 195,325 L 197,470" stroke="rgba(122,90,60,0.1)" strokeWidth={1} fill="none" />
+        <path d="M 245,320 L 222,462" stroke="rgba(122,90,60,0.1)" strokeWidth={1} fill="none" />
 
-        {/* ── Stems ── */}
-        {ALL_FLOWER_HEADS.map((f, i) => (
-          <path
-            key={`stem-${i}`}
-            d={stemPath(TIE_POINT.x, TIE_POINT.y, f.x, f.y + 18)}
-            stroke={C.stem}
-            strokeWidth={1.8}
-            fill="none"
-          />
-        ))}
-
-        {/* ── Eucalyptus (greenery, behind everything) ── */}
-        {EUCALYPTUS.map((e, i) => (
-          <g key={`euc-${i}`} transform={`translate(${e.x},${e.y})`}>
-            <EucalyptusSprig length={e.length} curve={e.curve} />
-          </g>
-        ))}
-
-        {/* ── Baby's breath filler ── */}
-        {FILLER.map((f, i) => (
-          <g key={`fill-${i}`} transform={`translate(${f.x},${f.y})`}>
-            <BabysBreath />
-          </g>
-        ))}
-
-        {/* ── Ranunculus ── */}
-        {RANUNCULUS.map((r, i) => (
-          <motion.g
-            key={`ran-${i}`}
-            transform={`translate(${r.x},${r.y}) rotate(${r.rotate}) scale(${r.scale})`}
-            animate={{ rotate: [r.rotate - 1.5, r.rotate + 1.5, r.rotate - 1.5] }}
-            transition={{ duration: 5 + i, repeat: Infinity, ease: "easeInOut", delay: i * 0.4 }}
-            style={{ transformOrigin: `${r.x}px ${r.y}px` }}
-          >
-            <Ranunculus variant={r.variant} />
-          </motion.g>
-        ))}
-
-        {/* ── Peonies ── */}
-        {PEONIES.map((p, i) => (
-          <motion.g
-            key={`peo-${i}`}
-            transform={`translate(${p.x},${p.y}) rotate(${p.rotate}) scale(${p.scale})`}
-            animate={{ rotate: [p.rotate - 1.2, p.rotate + 1.2, p.rotate - 1.2] }}
-            transition={{ duration: 6 + i, repeat: Infinity, ease: "easeInOut", delay: i * 0.6 }}
-            style={{ transformOrigin: `${p.x}px ${p.y}px` }}
-          >
-            <Peony />
-          </motion.g>
-        ))}
-
-        {/* ── Roses (focal, front-most) ── */}
+        {/* ── Rose cluster — back to front ── */}
         {ROSES.map((r, i) => (
-          <motion.g
-            key={`rose-${i}`}
-            transform={`translate(${r.x},${r.y}) rotate(${r.rotate}) scale(${r.scale})`}
-            animate={{ rotate: [r.rotate - 1, r.rotate + 1, r.rotate - 1] }}
-            transition={{ duration: 5.5 + i * 0.7, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }}
-            style={{ transformOrigin: `${r.x}px ${r.y}px` }}
-          >
-            <Rose />
-          </motion.g>
+          <g key={i} transform={`translate(${r.x},${r.y}) rotate(${r.rotate}) scale(${r.scale})`}>
+            <RoseHead gradient={ROSE_GRADIENTS[r.variant]} />
+          </g>
         ))}
 
-        {/* ── Ribbon bow, tied over the gathered stems ── */}
-        <g transform={`translate(${TIE_POINT.x},${TIE_POINT.y - 4})`}>
+        {/* ── Ribbon bow, tied over the wrap ── */}
+        <g transform="translate(195,326)">
           <path d="M 0,0 C -22,-14 -34,2 -18,10 C -8,15 -2,6 0,0 Z" fill={C.ribbon} stroke={C.ribbonDark} strokeWidth={1} />
           <path d="M 0,0 C 22,-14 34,2 18,10 C 8,15 2,6 0,0 Z" fill={C.ribbon} stroke={C.ribbonDark} strokeWidth={1} />
-          <path d="M -4,2 L -14,42 L -4,36 Z" fill={C.ribbon} />
-          <path d="M 6,2 L 18,44 L 8,37 Z" fill={C.ribbon} />
+          <path d="M -4,2 L -16,52 L -5,44 Z" fill={C.ribbon} />
+          <path d="M 6,2 L 20,54 L 9,45 Z" fill={C.ribbon} />
           <circle r={6} fill={C.ribbonDark} />
         </g>
 
@@ -465,7 +246,7 @@ export default function BouquetScene() {
               }}
               transition={{ duration: p.duration, ease: "easeIn" }}
             >
-              <path d={petalPath(9, 6)} fill={p.color} />
+              <path d={rosePetalPath(9, 7)} fill={p.color} />
             </motion.g>
           ))}
         </AnimatePresence>
