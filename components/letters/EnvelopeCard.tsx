@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Letter } from "@/data/letters";
 
@@ -11,6 +11,23 @@ interface EnvelopeCardProps {
 
 export default function EnvelopeCard({ letter, index }: EnvelopeCardProps) {
   const [isOpen, setIsOpen] = useState(false);
+
+  // Close on Escape
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setIsOpen(false);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  // Lock body scroll while modal is open
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
   return (
     <motion.div
@@ -26,9 +43,8 @@ export default function EnvelopeCard({ letter, index }: EnvelopeCardProps) {
       {/* ── Envelope ── */}
       <div
         className="cursor-pointer select-none"
-        onClick={() => setIsOpen((o) => !o)}
+        onClick={() => setIsOpen(true)}
         role="button"
-        aria-expanded={isOpen}
         aria-label={`Open when ${letter.condition}`}
       >
         <motion.div
@@ -38,10 +54,7 @@ export default function EnvelopeCard({ letter, index }: EnvelopeCardProps) {
           style={{
             background: `linear-gradient(160deg, ${letter.accentColor} 0%, #05070f 100%)`,
             border: `1px solid ${letter.sealColor}22`,
-            boxShadow: isOpen
-              ? `0 8px 32px ${letter.sealColor}33`
-              : `0 4px 16px rgba(0,0,0,0.4)`,
-            transition: "box-shadow 0.3s ease",
+            boxShadow: `0 4px 16px rgba(0,0,0,0.4)`,
           }}
         >
           {/* Envelope flap — triangular top */}
@@ -57,9 +70,7 @@ export default function EnvelopeCard({ letter, index }: EnvelopeCardProps) {
           {/* Envelope body */}
           <div className="px-5 pb-5 pt-2 flex flex-col items-center gap-4">
             {/* Wax seal */}
-            <motion.div
-              animate={isOpen ? { scale: 0.85, opacity: 0.5 } : { scale: 1, opacity: 1 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
+            <div
               className="relative flex items-center justify-center rounded-full -mt-4"
               style={{
                 width: "52px",
@@ -71,7 +82,7 @@ export default function EnvelopeCard({ letter, index }: EnvelopeCardProps) {
               }}
             >
               🦊
-            </motion.div>
+            </div>
 
             {/* "Open when..." label */}
             <div className="text-center">
@@ -88,86 +99,113 @@ export default function EnvelopeCard({ letter, index }: EnvelopeCardProps) {
                 {letter.shortLabel}
               </p>
             </div>
-
-            {/* Open/close cue */}
-            <motion.div
-              animate={{ rotate: isOpen ? 180 : 0 }}
-              transition={{ duration: 0.35, ease: "easeInOut" }}
-              style={{
-                color: `${letter.sealColor}66`,
-                fontSize: "12px",
-                lineHeight: 1,
-              }}
-            >
-              ↓
-            </motion.div>
           </div>
         </motion.div>
       </div>
 
-      {/* ── Letter (slides out below envelope) ── */}
+      {/* ── Letter modal — centered popup over dimmed backdrop ── */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0, y: -8 }}
-            animate={{ opacity: 1, height: "auto", y: 0 }}
-            exit={{ opacity: 0, height: 0, y: -8 }}
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            style={{ overflow: "hidden" }}
-          >
-            <div
-              className="mt-2 rounded-xl p-6 flex flex-col gap-4"
-              style={{
-                background: "var(--bg-card-solid)",
-                backgroundImage:
-                  "repeating-linear-gradient(transparent, transparent 27px, rgba(122,92,62,0.07) 27px, rgba(122,92,62,0.07) 28px)",
-                backgroundPositionY: "20px",
-                boxShadow: `0 8px 32px rgba(0,0,0,0.3), 0 0 0 1px ${letter.sealColor}22`,
-                borderRadius: "0 0 12px 12px",
-              }}
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 z-50 cursor-pointer"
+              style={{ backgroundColor: "rgba(2,4,12,0.82)", backdropFilter: "blur(6px)" }}
+              onClick={() => setIsOpen(false)}
+            />
+
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, y: 30, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.97 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
             >
-              {/* Letter header */}
-              <div className="flex items-center gap-2 pb-2" style={{ borderBottom: `1px solid rgba(122,92,62,0.15)` }}>
-                <span style={{ fontSize: "16px" }}>🦊</span>
-                <p
-                  className="font-hand text-sm"
-                  style={{ color: letter.sealColor, opacity: 0.9 }}
-                >
-                  {letter.condition}
-                </p>
-              </div>
-
-              {/* Letter paragraphs */}
-              {letter.content.map((para, i) => (
-                <motion.p
-                  key={i}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.1 + i * 0.08 }}
-                  className="font-hand leading-relaxed"
-                  style={{
-                    fontSize: "14.5px",
-                    color: "#7a5c3e",
-                    lineHeight: "1.85",
-                  }}
-                >
-                  {para}
-                </motion.p>
-              ))}
-
-              {/* Closing */}
-              <p
-                className="font-hand text-right mt-2 pt-3"
+              <div
+                className="relative w-full max-w-lg max-h-[82vh] overflow-y-auto pointer-events-auto rounded-2xl"
                 style={{
-                  color: "#c9886b",
-                  fontSize: "13px",
-                  borderTop: "1px solid rgba(122,92,62,0.12)",
+                  background: "#0d0714",
+                  border: `1px solid ${letter.sealColor}22`,
+                  boxShadow: `0 32px 80px rgba(0,0,0,0.6), 0 0 60px ${letter.sealColor}11`,
                 }}
+                onClick={(e) => e.stopPropagation()}
               >
-                {letter.closing}
-              </p>
-            </div>
-          </motion.div>
+                {/* Top gradient line + close button */}
+                <div className="sticky top-0 z-10 flex items-center justify-between px-7 pt-6 pb-4" style={{ background: "#0d0714" }}>
+                  <div
+                    className="flex-1 mr-4"
+                    style={{
+                      height: "2px",
+                      background: `linear-gradient(to right, ${letter.sealColor}, transparent)`,
+                      borderRadius: "1px",
+                    }}
+                  />
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-center rounded-full flex-shrink-0 transition-all duration-200 hover:scale-110"
+                    style={{
+                      width: "30px",
+                      height: "30px",
+                      background: "rgba(255,255,255,0.06)",
+                      color: "rgba(255,255,255,0.5)",
+                      fontSize: "15px",
+                    }}
+                    aria-label="Close"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {/* Content */}
+                <div className="px-7 pb-8 flex flex-col gap-4">
+                  <span style={{ fontSize: "26px" }}>
+                    {letter.sealColor === "#f59e0b" ? "⭐" : letter.sealColor === "#f472b6" ? "🌸" : "💗"}
+                  </span>
+
+                  <h2
+                    className="font-display text-2xl leading-snug"
+                    style={{ color: "#f2eee8" }}
+                  >
+                    {letter.condition}
+                  </h2>
+
+                  {letter.content.map((para, i) => (
+                    <motion.p
+                      key={i}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, delay: 0.1 + i * 0.06 }}
+                      className="font-body leading-relaxed"
+                      style={{
+                        fontSize: "15px",
+                        color: "rgba(232,228,222,0.75)",
+                        lineHeight: "1.85",
+                      }}
+                    >
+                      {para}
+                    </motion.p>
+                  ))}
+
+                  {/* Closing */}
+                  <p
+                    className="font-hand italic mt-2 pt-4"
+                    style={{
+                      color: letter.sealColor,
+                      fontSize: "14px",
+                      borderTop: "1px solid rgba(255,255,255,0.08)",
+                    }}
+                  >
+                    {letter.closing}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </motion.div>
