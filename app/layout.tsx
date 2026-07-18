@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { ThemeProvider } from "@/lib/theme";
+import BackgroundMusic from "@/components/shared/BackgroundMusic";
 import "./globals.css";
 
 const cinzel = localFont({
@@ -48,7 +49,10 @@ export default function RootLayout({
       className={`${cinzel.variable} ${cormorant.variable} ${caveat.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <BackgroundMusic />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -8,7 +8,7 @@ import FutureReveal from "@/components/future/FutureReveal";
 // Typewriter speed — fast, ms per character
 const TYPE_SPEED_MS = 18;
 // Pause after a part finishes typing, before the next part begins
-const PAUSE_BETWEEN_PARTS_MS = 2200;
+const PAUSE_BETWEEN_PARTS_MS = 8000;
 // Extra pause after the very first part (gives her a moment to settle in)
 const INITIAL_PAUSE_MS = 600;
 
@@ -29,6 +29,7 @@ export default function FinaleSequence({ onFutureRevealed }: { onFutureRevealed?
   const [showFuture, setShowFuture] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const songTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scrollAnchorRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -36,6 +37,7 @@ export default function FinaleSequence({ onFutureRevealed }: { onFutureRevealed?
   const clearTimers = useCallback(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     if (intervalRef.current) clearInterval(intervalRef.current);
+    if (songTimeoutRef.current) clearTimeout(songTimeoutRef.current);
   }, []);
 
   // Auto-scroll to keep the newest content in view
@@ -93,25 +95,29 @@ export default function FinaleSequence({ onFutureRevealed }: { onFutureRevealed?
     setPlayback("playing");
     setCompletedParts([]);
 
-    if (!audioRef.current) {
-      const audio = new Audio("/audio/finale-song.mp3");
-      audio.volume = 0;
-      audioRef.current = audio;
-    }
-    const audio = audioRef.current;
-    audio.play().then(() => {
-      let vol = 0;
-      const fade = setInterval(() => {
-        vol += 0.04;
-        if (vol >= 0.4) {
-          vol = 0.4;
-          clearInterval(fade);
-        }
-        audio.volume = vol;
-      }, 150);
-    }).catch(() => {
-      // No audio yet — sequence still plays silently
-    });
+    // Song 2 starts 5 seconds after she presses Begin, looping
+    songTimeoutRef.current = setTimeout(() => {
+      if (!audioRef.current) {
+        const audio = new Audio("/audio/song-2.mp4");
+        audio.loop = true;
+        audio.volume = 0;
+        audioRef.current = audio;
+      }
+      const audio = audioRef.current;
+      audio.play().then(() => {
+        let vol = 0;
+        const fade = setInterval(() => {
+          vol += 0.04;
+          if (vol >= 0.4) {
+            vol = 0.4;
+            clearInterval(fade);
+          }
+          audio.volume = vol;
+        }, 150);
+      }).catch(() => {
+        // No audio yet — sequence still plays silently
+      });
+    }, 5000);
 
     timeoutRef.current = setTimeout(() => {
       typeOutPart(0);
