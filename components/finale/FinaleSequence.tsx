@@ -249,7 +249,7 @@ export default function FinaleSequence({ onFutureRevealed }: { onFutureRevealed?
 
       {/* Playing / Done — stacked parts, nothing ever disappears */}
       {(playback === "playing" || playback === "done") && (
-        <div className="relative z-10 w-full max-w-lg mx-auto px-8 py-16 flex flex-col gap-10">
+        <div className="relative z-10 w-full max-w-lg mx-auto px-8 pt-16 has-dock flex flex-col gap-10">
           {completedParts.map((lines, partIdx) => (
             <div key={`part-${partIdx}`} className="flex flex-col items-center">
               <p
