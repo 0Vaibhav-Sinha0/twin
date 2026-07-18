@@ -9,22 +9,52 @@ const TARGET_DATE = new Date("2027-07-26T00:00:00");
 type FuturePhase = "message" | "timeline" | "countdown" | "letter" | "promises" | "skywall" | "final";
 
 function useCountdown(target: Date) {
-  const [remaining, setRemaining] = useState(() => target.getTime() - Date.now());
+  const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setRemaining(target.getTime() - Date.now());
-    }, 1000);
+    const interval = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(interval);
-  }, [target]);
+  }, []);
 
-  const total = Math.max(0, remaining);
-  const seconds = Math.floor(total / 1000) % 60;
-  const minutes = Math.floor(total / (1000 * 60)) % 60;
-  const hours = Math.floor(total / (1000 * 60 * 60)) % 24;
-  const days = Math.floor(total / (1000 * 60 * 60 * 24)) % 30;
-  const months = Math.floor(total / (1000 * 60 * 60 * 24 * 30)) % 12;
-  const years = Math.floor(total / (1000 * 60 * 60 * 24 * 365));
+  // Real calendar-aware breakdown — walks the calendar forward from
+  // "now" toward the target, borrowing correctly from each unit
+  // (accounts for actual month lengths and leap years, not fixed
+  // 30-day/365-day approximations).
+  let years = target.getFullYear() - now.getFullYear();
+  let months = target.getMonth() - now.getMonth();
+  let days = target.getDate() - now.getDate();
+  let hours = target.getHours() - now.getHours();
+  let minutes = target.getMinutes() - now.getMinutes();
+  let seconds = target.getSeconds() - now.getSeconds();
+
+  if (seconds < 0) {
+    seconds += 60;
+    minutes -= 1;
+  }
+  if (minutes < 0) {
+    minutes += 60;
+    hours -= 1;
+  }
+  if (hours < 0) {
+    hours += 24;
+    days -= 1;
+  }
+  if (days < 0) {
+    // Borrow from months using the number of days in the month
+    // immediately before the target month
+    const borrowMonth = new Date(target.getFullYear(), target.getMonth(), 0);
+    days += borrowMonth.getDate();
+    months -= 1;
+  }
+  if (months < 0) {
+    months += 12;
+    years -= 1;
+  }
+
+  const total = target.getTime() - now.getTime();
+  if (total <= 0) {
+    return { years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
+  }
 
   return { years, months, days, hours, minutes, seconds };
 }
