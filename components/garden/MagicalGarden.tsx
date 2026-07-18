@@ -5,7 +5,7 @@ import BouquetScene from "./BouquetScene";
 
 export default function MagicalGarden() {
   return (
-    <div className="fixed inset-0 flex flex-col" style={{ zIndex: 0 }}>
+    <div className="absolute inset-0 flex flex-col" style={{ zIndex: 0 }}>
       {/* Page header — floats over the bouquet */}
       <div className="absolute top-0 left-0 right-0 z-10 pt-10 pb-4 text-center pointer-events-none">
         <motion.p

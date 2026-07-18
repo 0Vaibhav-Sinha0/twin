@@ -1,6 +1,6 @@
 import LettersGrid from "@/components/letters/LettersGrid";
-import BottomDock from "@/components/shared/BottomDock";
 import ThemeToggle from "@/components/shared/ThemeToggle";
+import PageShell from "@/components/shared/PageShell";
 export default function LettersPage() {
-  return <main><LettersGrid /><ThemeToggle /><BottomDock /></main>;
+  return <PageShell><LettersGrid /><ThemeToggle /></PageShell>;
 }

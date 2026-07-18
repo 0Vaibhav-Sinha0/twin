@@ -1,6 +1,6 @@
 import ThoughtsBoard from "@/components/thoughts/ThoughtsBoard";
-import BottomDock from "@/components/shared/BottomDock";
 import ThemeToggle from "@/components/shared/ThemeToggle";
+import PageShell from "@/components/shared/PageShell";
 export default function ThoughtsPage() {
-  return <main><ThoughtsBoard /><ThemeToggle /><BottomDock /></main>;
+  return <PageShell><ThoughtsBoard /><ThemeToggle /></PageShell>;
 }

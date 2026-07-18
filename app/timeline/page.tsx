@@ -1,6 +1,6 @@
 import FriendshipTimeline from "@/components/timeline/FriendshipTimeline";
-import BottomDock from "@/components/shared/BottomDock";
 import ThemeToggle from "@/components/shared/ThemeToggle";
+import PageShell from "@/components/shared/PageShell";
 export default function TimelinePage() {
-  return <main><FriendshipTimeline /><ThemeToggle /><BottomDock /></main>;
+  return <PageShell><FriendshipTimeline /><ThemeToggle /></PageShell>;
 }

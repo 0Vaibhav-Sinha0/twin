@@ -1,11 +1,10 @@
 import MagicalGarden from "@/components/garden/MagicalGarden";
-import BottomDock from "@/components/shared/BottomDock";
+import PageShell from "@/components/shared/PageShell";
 
 export default function GardenPage() {
   return (
-    <main className="relative">
+    <PageShell>
       <MagicalGarden />
-      <BottomDock />
-    </main>
+    </PageShell>
   );
 }

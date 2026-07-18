@@ -1,6 +1,6 @@
 import MemoryGame from "@/components/games/MemoryGame";
-import BottomDock from "@/components/shared/BottomDock";
 import ThemeToggle from "@/components/shared/ThemeToggle";
+import PageShell from "@/components/shared/PageShell";
 export default function GamesPage() {
-  return <main><MemoryGame /><ThemeToggle /><BottomDock /></main>;
+  return <PageShell><MemoryGame /><ThemeToggle /></PageShell>;
 }

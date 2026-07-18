@@ -19,7 +19,18 @@ const NAV_ITEMS = [
   { href: "/finale",        icon: "🦊",  label: "For You"       },
 ];
 
-export default function BottomDock() {
+interface BottomDockProps {
+  /**
+   * When true, renders as the original position:fixed floating overlay
+   * instead of a normal flex-layout item. Only used by pages (like
+   * Constellation) whose own scroll mechanic depends on real
+   * window-level scrolling, where nesting inside PageShell's own
+   * scroll container isn't possible.
+   */
+  floating?: boolean;
+}
+
+export default function BottomDock({ floating = false }: BottomDockProps) {
   const pathname = usePathname();
   const [stars, setStars] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -70,10 +81,14 @@ export default function BottomDock() {
 
   return (
     <motion.nav
-      initial={{ y: 80, opacity: 0 }}
+      initial={{ y: 40, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed bottom-6 left-4 right-4 z-40 flex justify-center"
+      className={
+        floating
+          ? "fixed bottom-6 left-4 right-4 z-40 flex justify-center"
+          : "relative z-40 flex justify-center flex-shrink-0 px-4 pb-6 pt-2"
+      }
       aria-label="Main navigation"
     >
       <div className="relative w-full" style={{ maxWidth: "480px" }}>

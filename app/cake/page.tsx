@@ -1,7 +1,7 @@
 "use client";
 
 import BirthdayCake from "@/components/cake/BirthdayCake";
-import BottomDock from "@/components/shared/BottomDock";
+import PageShell from "@/components/shared/PageShell";
 import { useForceDarkMode } from "@/lib/theme";
 
 export default function CakePage() {
@@ -10,9 +10,8 @@ export default function CakePage() {
   useForceDarkMode();
 
   return (
-    <main className="relative">
+    <PageShell>
       <BirthdayCake />
-      <BottomDock />
-    </main>
+    </PageShell>
   );
 }

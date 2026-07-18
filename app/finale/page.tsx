@@ -2,21 +2,16 @@
 
 import { useState } from "react";
 import FinaleSequence from "@/components/finale/FinaleSequence";
-import BottomDock from "@/components/shared/BottomDock";
 import ThemeToggle from "@/components/shared/ThemeToggle";
+import PageShell from "@/components/shared/PageShell";
 
 export default function FinalePage() {
   const [journeyComplete, setJourneyComplete] = useState(false);
 
   return (
-    <main>
+    <PageShell hideDock={journeyComplete}>
       <FinaleSequence onFutureRevealed={() => setJourneyComplete(true)} />
-      {!journeyComplete && (
-        <>
-          <ThemeToggle />
-          <BottomDock />
-        </>
-      )}
-    </main>
+      {!journeyComplete && <ThemeToggle />}
+    </PageShell>
   );
 }
