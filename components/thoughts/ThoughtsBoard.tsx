@@ -295,6 +295,16 @@ export default function ThoughtsBoard() {
                   >
                     waiting to call u by this nickname 😭
                   </motion.p>
+
+                  <motion.p
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.1, duration: 0.5 }}
+                    className="font-hand text-xs text-center"
+                    style={{ color: "rgba(251,191,36,0.45)", letterSpacing: "0.04em" }}
+                  >
+                    (yes, this was a rizz. no, I'm not sorry.) 💀
+                  </motion.p>
                 </motion.div>
               )}
 
