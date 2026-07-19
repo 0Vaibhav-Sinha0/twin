@@ -78,7 +78,7 @@ export const CHAT_WEEKS: ChatWeek[] = [
       },
       {
         id: "w2m3",
-        type: "screenshot",
+        type: "moment",
         caption: "The first website. Built and sent for absolutely no reason at all.",
         placeholderColor: "#12203a",
         reaction: "🎁",
@@ -209,7 +209,7 @@ export const CHAT_WEEKS: ChatWeek[] = [
     memories: [
       {
         id: "w7m1",
-        type: "screenshot",
+        type: "moment",
         caption: "\"More 40 days to go.\" You had no idea what the countdown was actually for.",
         placeholderColor: "#131c44",
         reaction: "🤫",
@@ -325,7 +325,7 @@ export const CHAT_WEEKS: ChatWeek[] = [
     memories: [
       {
         id: "w11m1",
-        type: "screenshot",
+        type: "moment",
         caption: "\"14 days left.\" The countdown was getting real.",
         placeholderColor: "#0f2a1e",
         reaction: "🗓",
