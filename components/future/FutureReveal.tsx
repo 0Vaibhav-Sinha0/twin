@@ -703,10 +703,10 @@ function FinalScreen() {
             />
           )}
 
-          {/* Hidden version line — barely visible */}
+          {/* Hidden version line — subtle, but readable */}
           <p
             className="font-hand mt-16"
-            style={{ fontSize: "10px", color: "rgba(232,244,255,0.12)" }}
+            style={{ fontSize: "15px", color: "rgba(232,244,255,0.22)" }}
           >
             Version 1.0 — Built with countless memories, countless prompts, and one amazing Twin. 🤍
           </p>

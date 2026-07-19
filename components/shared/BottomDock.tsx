@@ -9,7 +9,6 @@ import { getStars } from "@/lib/stars";
 const NAV_ITEMS = [
   { href: "/home",          icon: "✦",  label: "Home"          },
   { href: "/timeline",      icon: "🌿",  label: "Timeline"      },
-  { href: "/letters",       icon: "✉",  label: "Letters"       },
   { href: "/chat",          icon: "💬",  label: "Chats"         },
   { href: "/garden",        icon: "🌸",  label: "Garden"        },
   { href: "/cake",          icon: "🎂",  label: "Cake"          },

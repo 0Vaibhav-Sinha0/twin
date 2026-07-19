@@ -193,9 +193,9 @@ export default function StarMap({ progress }: StarMapProps) {
       if (progress < 0.15) {
         ctx.font = `11px var(--font-display)`;
         ctx.fillStyle = "rgba(58,169,255,0.6)";
-        ctx.fillText("you", axPos + 12, ayPos - 10);
+        ctx.fillText("vaibhav", axPos + 12, ayPos - 10);
         ctx.fillStyle = "rgba(232,121,249,0.6)";
-        ctx.fillText("her", bxPos + 12, byPos - 10);
+        ctx.fillText("nandani", bxPos + 12, byPos - 10);
       }
 
       tRef.current += 0.016;

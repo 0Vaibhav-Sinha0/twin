@@ -340,9 +340,9 @@ export const CHAT_WEEKS: ChatWeek[] = [
       {
         id: "w11m2",
         type: "emotional",
-        caption: "A hard night after your brother scolded you. \"Justify to nhi krre unka daatna, but maybe unka din acha nhi rha hoga.\"",
+        caption: "\"I lowkey miss u twin\" — sent in the middle of an ordinary day, completely unprompted.",
         placeholderColor: "#0a2016",
-        reaction: "🫂",
+        reaction: "💭",
       },
       {
         id: "w11m3",
