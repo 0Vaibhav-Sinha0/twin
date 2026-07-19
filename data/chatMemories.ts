@@ -94,7 +94,7 @@ export const CHAT_WEEKS: ChatWeek[] = [
       {
         id: "w3m1",
         type: "emotional",
-        caption: "You told me about your mother. Your real name. Your real home. I said the only thing that felt true — I'll be the best stranger you've ever met.",
+        caption: "You told me something real — your real name, your real home. \"Tum bohot strong ho yaar,\" I said. You corrected me gently. I answered the only way that felt true: I will be the best stranger you would have ever met.",
         placeholderColor: "#1a0f30",
         reaction: "🌙",
       },
@@ -263,7 +263,7 @@ export const CHAT_WEEKS: ChatWeek[] = [
     id: "w9",
     week: "Week 9",
     dateRange: "22–30 June",
-    tagline: "the secret came out, and so did our first phone call.",
+    tagline: "the secret came out, your first voice note, and our first phone call.",
     memories: [
       {
         id: "w9m1",
@@ -282,7 +282,14 @@ export const CHAT_WEEKS: ChatWeek[] = [
       {
         id: "w9m3",
         type: "voice",
-        caption: "Our first phone call. 40 minutes. \"Mzaaa aaya tumse baat krke.\"",
+        caption: "Your first ever voice note. \"Kitna msttt h tumhara aawazz.\" I kept it pinned.",
+        placeholderColor: "#170c24",
+        reaction: "🎙",
+      },
+      {
+        id: "w9m4",
+        type: "voice",
+        caption: "Our first call barely lasted ten minutes. The second, a little later, stretched to forty. \"Mzaaa aaya tumse baat krke.\"",
         placeholderColor: "#200a1a",
         reaction: "📞",
       },
@@ -292,7 +299,7 @@ export const CHAT_WEEKS: ChatWeek[] = [
     id: "w10",
     week: "Week 10",
     dateRange: "1–7 July",
-    tagline: "our first real disagreement, resolved like adults, and your first voice note.",
+    tagline: "our first real disagreement, resolved like adults.",
     memories: [
       {
         id: "w10m1",
@@ -303,10 +310,10 @@ export const CHAT_WEEKS: ChatWeek[] = [
       },
       {
         id: "w10m2",
-        type: "voice",
-        caption: "Your first ever voice note. \"Kitna msttt h tumhara aawazz.\" I kept it pinned.",
+        type: "joke",
+        caption: "Half-joking, mid-build: \"Tum gift krdo n mereko claude subscription 24k wala.\" Absolutely the wrong moment to ask.",
         placeholderColor: "#0a2218",
-        reaction: "🎙",
+        reaction: "😂",
       },
       {
         id: "w10m3",
