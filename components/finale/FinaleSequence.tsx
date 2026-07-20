@@ -124,25 +124,22 @@ export default function FinaleSequence({ onFutureRevealed }: { onFutureRevealed?
     }, INITIAL_PAUSE_MS);
   }, [typeOutPart]);
 
-  // Fade out music once the message sequence finishes typing.
-  // "The Future" no longer auto-triggers — she controls the pace via a Next button.
-  useEffect(() => {
-    if (playback === "done" && audioRef.current) {
+  const handleContinueToFuture = useCallback(() => {
+    // Song fades out only now — when she actually clicks NEXT —
+    // not when the button first appears.
+    if (audioRef.current) {
       const audio = audioRef.current;
       let vol = audio.volume;
       const fade = setInterval(() => {
-        vol -= 0.02;
+        vol -= 0.05;
         if (vol <= 0) {
           vol = 0;
           audio.pause();
           clearInterval(fade);
         }
         audio.volume = vol;
-      }, 200);
+      }, 100);
     }
-  }, [playback]);
-
-  const handleContinueToFuture = useCallback(() => {
     setShowFuture(true);
     onFutureRevealed?.();
   }, [onFutureRevealed]);
