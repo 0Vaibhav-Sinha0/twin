@@ -146,6 +146,21 @@ export default function FinaleSequence({ onFutureRevealed }: { onFutureRevealed?
 
   useEffect(() => clearTimers, [clearTimers]);
 
+  // Stop song-2 completely if she navigates away from this page by any
+  // means (dock, back button, etc.) — not just when she clicks NEXT.
+  // Without this, the Audio object keeps playing detached from the
+  // unmounted component, and pressing BEGIN again on a return visit
+  // creates a second overlapping instance.
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
   // Determine line style — same logic as before, matches data model
   const getLineStyle = (partIdx: number, lineIdx: number) => {
     const line = FINALE_PARTS[partIdx]?.lines[lineIdx];
