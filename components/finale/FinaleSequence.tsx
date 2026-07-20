@@ -241,6 +241,9 @@ export default function FinaleSequence({ onFutureRevealed }: { onFutureRevealed?
             <p className="font-hand text-lg" style={{ color: "var(--text-secondary)" }}>
               one last thing before you go
             </p>
+            <p className="font-hand text-sm" style={{ color: "var(--text-muted)" }}>
+              btw twin, let's play my favourite song now — not the birthday tune anymore ✨
+            </p>
             <motion.button
               onClick={handleBegin}
               whileHover={{ scale: 1.05 }}
