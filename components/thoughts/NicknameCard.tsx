@@ -7,9 +7,10 @@ import { THOUGHT_COLORS } from "@/data/thoughts";
 interface NicknameCardProps {
   thought: Thought;
   index: number;
+  onClick?: () => void;
 }
 
-export default function NicknameCard({ thought, index }: NicknameCardProps) {
+export default function NicknameCard({ thought, index, onClick }: NicknameCardProps) {
   const isLeft = index % 2 === 0;
   const colors = THOUGHT_COLORS[thought.color];
 
@@ -28,7 +29,7 @@ export default function NicknameCard({ thought, index }: NicknameCardProps) {
             transition={{ duration: 0.6, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
             style={{ display: "inline-block", maxWidth: "100%" }}
           >
-            <Card thought={thought} colors={colors} align="right" />
+            <Card thought={thought} colors={colors} align="right" onClick={onClick} />
           </motion.div>
         )}
       </div>
@@ -58,7 +59,7 @@ export default function NicknameCard({ thought, index }: NicknameCardProps) {
             transition={{ duration: 0.6, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
             style={{ display: "inline-block", maxWidth: "100%" }}
           >
-            <Card thought={thought} colors={colors} align="left" />
+            <Card thought={thought} colors={colors} align="left" onClick={onClick} />
           </motion.div>
         )}
       </div>
@@ -70,13 +71,16 @@ function Card({
   thought,
   colors,
   align,
+  onClick,
 }: {
   thought: Thought;
   colors: { bg: string; border: string; text: string; glow: string };
   align: "left" | "right";
+  onClick?: () => void;
 }) {
   return (
     <div
+      onClick={onClick}
       className="rounded-2xl px-4 py-2.5 transition-shadow duration-300 inline-block"
       style={{
         background: colors.bg,
@@ -85,6 +89,7 @@ function Card({
         textAlign: align,
         backdropFilter: "blur(12px)",
         maxWidth: "150px",
+        cursor: onClick ? "pointer" : "default",
       }}
     >
       <p

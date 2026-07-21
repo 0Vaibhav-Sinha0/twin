@@ -17,6 +17,12 @@ export default function ThoughtsBoard() {
   const [unlockState, setUnlockState] = useState<"idle" | "unlocked" | "no">("idle");
   const [noResponse, setNoResponse] = useState("");
   const [noCount, setNoCount] = useState(0);
+  const [moonTaps, setMoonTaps] = useState(0);
+  const secretRevealed = moonTaps >= 5;
+
+  const handleMoonTap = () => {
+    setMoonTaps((n) => Math.min(n + 1, 5));
+  };
 
   const handleShuffle = () => {
     const shuffled = [...shuffledThoughts];
@@ -128,7 +134,11 @@ export default function ThoughtsBoard() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.4 }}
                 >
-                  <NicknameCard thought={thought} index={i} />
+                  <NicknameCard
+                    thought={thought}
+                    index={i}
+                    onClick={thought.id === "th7" ? handleMoonTap : undefined}
+                  />
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -148,14 +158,25 @@ export default function ThoughtsBoard() {
             >
               🦊
             </div>
+
+            {moonTaps > 0 && !secretRevealed && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="font-hand text-xs"
+                style={{ color: "rgba(191,219,254,0.4)" }}
+              >
+                🌙 {moonTaps}/5
+              </motion.p>
+            )}
           </div>
         </div>
 
-        {/* ── Locked nickname section ─────────────────────────────── */}
+        {/* ── Locked nickname section — hidden until the Moon card is tapped 5 times ── */}
+        {secretRevealed && (
         <motion.div
           initial={{ opacity: 0, y: 32 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="mx-auto px-6 pb-32 flex flex-col items-center gap-6"
           style={{ maxWidth: "420px" }}
@@ -330,6 +351,7 @@ export default function ThoughtsBoard() {
             </AnimatePresence>
           </div>
         </motion.div>
+        )}
       </div>
     </div>
   );
