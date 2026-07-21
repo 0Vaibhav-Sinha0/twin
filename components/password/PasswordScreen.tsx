@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { gsap } from "gsap";
 
-const CORRECT_PASSWORD = "mine";
+const CORRECT_PASSWORD = "dora dora";
 
 interface PasswordScreenProps {
   onUnlocked: () => void;
