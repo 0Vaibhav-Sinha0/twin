@@ -30,11 +30,12 @@ export default function WeekCard({ week, index, defaultOpen = false }: WeekCardP
         className="w-full text-left rounded-2xl p-5 transition-all duration-300"
         style={{
           background: isOpen
-            ? "rgba(11,18,48,0.9)"
-            : "rgba(11,18,48,0.5)",
-          border: "1px solid rgba(58,169,255,0.15)",
+            ? "linear-gradient(135deg, rgba(251,191,36,0.1), rgba(11,18,48,0.92))"
+            : "linear-gradient(135deg, rgba(251,191,36,0.04), rgba(11,18,48,0.6))",
+          border: "1px solid rgba(251,191,36,0.3)",
+          borderLeft: "3px solid rgba(251,191,36,0.7)",
           boxShadow: isOpen
-            ? "0 0 32px rgba(58,169,255,0.08)"
+            ? "0 0 32px rgba(251,191,36,0.1)"
             : "none",
           backdropFilter: "blur(12px)",
         }}
@@ -43,9 +44,10 @@ export default function WeekCard({ week, index, defaultOpen = false }: WeekCardP
           <div className="flex flex-col gap-1">
             {/* Week label + date */}
             <div className="flex items-center gap-3">
+              <span style={{ fontSize: "11px" }}>📅</span>
               <span
                 className="font-display text-sm tracking-widest"
-                style={{ color: "#3aa9ff" }}
+                style={{ color: "#fbbf24" }}
               >
                 {week.week}
               </span>
@@ -68,7 +70,7 @@ export default function WeekCard({ week, index, defaultOpen = false }: WeekCardP
             {/* Memory count */}
             <p
               className="font-hand text-xs mt-1"
-              style={{ color: "rgba(58,169,255,0.5)" }}
+              style={{ color: "rgba(251,191,36,0.55)" }}
             >
               {week.memories.length} memories inside
             </p>
@@ -79,14 +81,14 @@ export default function WeekCard({ week, index, defaultOpen = false }: WeekCardP
             animate={{ rotate: isOpen ? 180 : 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="flex-shrink-0 mt-1"
-            style={{ color: "rgba(58,169,255,0.4)", fontSize: "16px" }}
+            style={{ color: "rgba(251,191,36,0.5)", fontSize: "16px" }}
           >
             ↓
           </motion.div>
         </div>
       </button>
 
-      {/* Memories grid — slides open */}
+      {/* Memories grid — nested visibly beneath the week header */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -97,16 +99,22 @@ export default function WeekCard({ week, index, defaultOpen = false }: WeekCardP
             style={{ overflow: "hidden" }}
           >
             <div
-              className="pt-3 pb-1"
+              className="pt-3 pb-1 pl-4 ml-1"
               style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-                gap: "12px",
+                borderLeft: "2px solid rgba(251,191,36,0.15)",
               }}
             >
-              {week.memories.map((memory, i) => (
-                <MemoryItemCard key={memory.id} memory={memory} index={i} />
-              ))}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+                  gap: "12px",
+                }}
+              >
+                {week.memories.map((memory, i) => (
+                  <MemoryItemCard key={memory.id} memory={memory} index={i} />
+                ))}
+              </div>
             </div>
           </motion.div>
         )}
