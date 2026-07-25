@@ -220,15 +220,15 @@ export default function PasswordScreen({ onUnlocked }: PasswordScreenProps) {
           style={{ width: "min(480px, 92vw)" }}
         >
           {/* Top ornament */}
-          <div className="flex items-center gap-3 mb-8 opacity-50">
-            <div className="h-px flex-1" style={{ backgroundColor: "var(--accent-primary)" }} />
+          <div className="flex items-center gap-3 mb-8">
+            <div className="h-px flex-1" style={{ backgroundColor: "var(--accent-primary)", opacity: 0.5 }} />
             <span
               className="font-display text-xs tracking-[0.3em]"
-              style={{ color: "#3aa9ff" }}
+              style={{ color: "#7ec4ff" }}
             >
               ✦ FOR NANDANI ✦
             </span>
-            <div className="h-px flex-1" style={{ backgroundColor: "var(--accent-primary)" }} />
+            <div className="h-px flex-1" style={{ backgroundColor: "var(--accent-primary)", opacity: 0.5 }} />
           </div>
 
           {/* Card */}
