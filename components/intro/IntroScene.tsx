@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { useIntroSequence } from "./useIntroSequence";
-import ParticleField from "./ParticleField";
 import MagicText from "./MagicText";
 import { INTRO_CONFIG } from "@/lib/introConfig";
 
@@ -56,9 +55,6 @@ export default function IntroScene({ onComplete }: IntroSceneProps) {
         zIndex: 50,
       }}
     >
-      {/* Three.js particle canvas */}
-      <ParticleField phase={phase} />
-
       {/* SVG text drawn over canvas */}
       <div className="relative w-full h-full flex items-center justify-center">
         <div
