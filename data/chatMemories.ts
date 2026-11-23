@@ -39,7 +39,7 @@ export const CHAT_WEEKS: ChatWeek[] = [
   {
     id: "w1",
     week: "Week 1",
-    dateRange: "21–30 April",
+    dateRange: "22–30 April",
     tagline: "two complete strangers, immediately committing to the bit.",
     memories: [
       {
