@@ -155,21 +155,22 @@ export default function MagicText({ phase }: MagicTextProps) {
           Welcome,
         </text>
 
-        {/* ── "Twin" — larger, centered below ── */}
+        {/* ── "Rasmalaiiiiiiii" — larger, centered below ── */}
         <text
           data-fill
           x="400"
           y="182"
           textAnchor="middle"
           fontFamily="var(--font-display)"
-          fontSize="86"
+          fontSize="62"
           fontWeight="700"
-          letterSpacing="24"
+          textLength="640"
+          lengthAdjust="spacing"
           fill={colors.electric}
           filter="url(#soft-bloom)"
           style={{ opacity: 0 }}
         >
-          Twin
+          Rasmalaiiiiiiii
         </text>
 
         <text
@@ -178,24 +179,25 @@ export default function MagicText({ phase }: MagicTextProps) {
           y="182"
           textAnchor="middle"
           fontFamily="var(--font-display)"
-          fontSize="86"
+          fontSize="62"
           fontWeight="700"
-          letterSpacing="24"
+          textLength="640"
+          lengthAdjust="spacing"
           fill="none"
           stroke={colors.violet}
           strokeWidth={stroke.width + 0.5}
           filter="url(#neon-glow)"
           style={{ opacity: 0 }}
         >
-          Twin
+          Rasmalaiiiiiiii
         </text>
 
-        {/* Decorative horizontal rule under "Twin" */}
+        {/* Decorative horizontal rule under the name */}
         <line
           data-stroke
-          x1="300"
+          x1="120"
           y1="198"
-          x2="500"
+          x2="680"
           y2="198"
           stroke={colors.electric}
           strokeWidth="1"

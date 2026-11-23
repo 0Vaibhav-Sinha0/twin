@@ -5,15 +5,54 @@ import * as THREE from "three";
 import { INTRO_CONFIG } from "@/lib/introConfig";
 import type { IntroPhase } from "./useIntroSequence";
 
-// Sample points along letterforms for "Welcome, Twin"
+// Sample points along letterforms for "Welcome, Rasmalaiiiiiiii"
 // These are normalized UV coordinates [x, y] in -1..1 space
 // representing the approximate stroke paths of the two words
+// Rough stroke outline for the second row: R A S M A L A + eight I's.
+// Each glyph is a simple box-ish shape; particles only need to hint at letterforms.
+function nameStrokes(): Array<[number, number, number, number]> {
+  const out: Array<[number, number, number, number]> = [];
+  const word = "RASMALAIIIIIIII";
+  const top = -0.12;
+  const bot = -0.28;
+  const mid = -0.20;
+  const slot = 0.062;
+  const startX = -(word.length * slot) / 2;
+  for (let i = 0; i < word.length; i++) {
+    const x0 = startX + i * slot;
+    const w = word[i] === "I" ? 0 : 0.045;
+    const x1 = x0 + w;
+    const cx = x0 + w / 2;
+    switch (word[i]) {
+      case "I":
+        out.push([cx, top, cx, bot]);
+        break;
+      case "R":
+        out.push([x0, top, x0, bot], [x0, top, x1, top], [x1, top, x1, mid], [x1, mid, x0, mid], [x0, mid, x1, bot]);
+        break;
+      case "A":
+        out.push([x0, bot, cx, top], [cx, top, x1, bot], [x0 + 0.01, mid - 0.02, x1 - 0.01, mid - 0.02]);
+        break;
+      case "S":
+        out.push([x1, top, x0, top], [x0, top, x0, mid], [x0, mid, x1, mid], [x1, mid, x1, bot], [x1, bot, x0, bot]);
+        break;
+      case "M":
+        out.push([x0, bot, x0, top], [x0, top, cx, mid], [cx, mid, x1, top], [x1, top, x1, bot]);
+        break;
+      case "L":
+        out.push([x0, top, x0, bot], [x0, bot, x1, bot]);
+        break;
+    }
+  }
+  return out;
+}
+
 function generateLetterPoints(count: number): Float32Array {
   const points: number[] = [];
 
   // We approximate the two words as a set of stroke segments
   // Row 1: "Welcome," centered around y = 0.18
-  // Row 2: "Twin"    centered around y = -0.18
+  // Row 2: "Rasmalaiiiiiiii" centered around y = -0.18
   const strokes: Array<[number, number, number, number]> = [
     // --- W ---
     [-0.72, 0.18, -0.68, 0.06], [-0.68, 0.06, -0.64, 0.16],
@@ -43,16 +82,7 @@ function generateLetterPoints(count: number): Float32Array {
     // --- , ---
     [0.06, 0.07, 0.06, 0.06], [0.06, 0.06, 0.04, 0.04],
 
-    // --- T ---
-    [-0.22, -0.12, 0.22, -0.12], [0.00, -0.12, 0.00, -0.28],
-    // --- w ---
-    [0.06, -0.18, 0.10, -0.28], [0.10, -0.28, 0.14, -0.20],
-    [0.14, -0.20, 0.18, -0.28], [0.18, -0.28, 0.22, -0.18],
-    // --- i ---
-    [0.26, -0.18, 0.26, -0.28], [0.26, -0.14, 0.26, -0.13],
-    // --- n ---
-    [0.32, -0.18, 0.32, -0.28], [0.32, -0.18, 0.36, -0.18],
-    [0.36, -0.18, 0.38, -0.21], [0.38, -0.21, 0.38, -0.28],
+    ...nameStrokes(),
   ];
 
   for (let i = 0; i < count; i++) {
