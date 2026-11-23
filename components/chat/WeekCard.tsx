@@ -13,6 +13,8 @@ interface WeekCardProps {
 
 export default function WeekCard({ week, index, defaultOpen = false }: WeekCardProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
+  const [daysOpen, setDaysOpen] = useState(false);
+  const days = week.days ?? [];
 
   return (
     <motion.div
@@ -114,6 +116,81 @@ export default function WeekCard({ week, index, defaultOpen = false }: WeekCardP
                 {week.memories.map((memory, i) => (
                   <MemoryItemCard key={memory.id} memory={memory} index={i} />
                 ))}
+              </div>
+
+              {/* Day-by-day toggle */}
+              <div className="mt-4 mb-2">
+                <button
+                  onClick={() => setDaysOpen((o) => !o)}
+                  aria-expanded={daysOpen}
+                  className="font-hand text-sm rounded-full px-4 py-2 transition-all duration-300"
+                  style={{
+                    color: "#fbbf24",
+                    background: daysOpen
+                      ? "rgba(251,191,36,0.14)"
+                      : "rgba(251,191,36,0.06)",
+                    border: "1px solid rgba(251,191,36,0.35)",
+                  }}
+                >
+                  {daysOpen ? "hide day by day ↑" : "📖 day by day ↓"}
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {daysOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                      style={{ overflow: "hidden" }}
+                    >
+                      {days.length === 0 ? (
+                        <p
+                          className="font-hand text-sm pt-3"
+                          style={{ color: "rgba(232,244,255,0.4)" }}
+                        >
+                          the day-by-day story for this week is on its way 🦊
+                        </p>
+                      ) : (
+                        <div className="flex flex-col gap-3 pt-3">
+                          {days.map((day) => (
+                            <div
+                              key={day.id}
+                              className="rounded-xl p-4"
+                              style={{
+                                background: "rgba(11,18,48,0.7)",
+                                border: "1px solid rgba(251,191,36,0.18)",
+                              }}
+                            >
+                              <div className="flex items-baseline gap-3 mb-1">
+                                <span
+                                  className="font-display text-xs tracking-widest"
+                                  style={{ color: "#fbbf24" }}
+                                >
+                                  {day.date}
+                                </span>
+                                {day.title && (
+                                  <span
+                                    className="font-hand text-sm"
+                                    style={{ color: "rgba(232,244,255,0.55)" }}
+                                  >
+                                    {day.title}
+                                  </span>
+                                )}
+                              </div>
+                              <p
+                                className="font-body text-sm leading-relaxed"
+                                style={{ color: "var(--text-secondary)" }}
+                              >
+                                {day.summary}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           </motion.div>
