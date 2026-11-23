@@ -18,21 +18,12 @@ export type MemoryItem = {
   reaction?: string;
 };
 
-export type DaySummary = {
-  id: string;
-  date: string;         // "22 Apr"
-  title?: string;       // optional short heading for the day
-  summary: string;      // what happened in the chat that day
-};
-
 export type ChatWeek = {
   id: string;
   week: string;         // "Week 1"
   dateRange: string;    // "June 1 – June 7"
   tagline: string;      // one-line emotional summary of this week
   memories: MemoryItem[];
-  // Optional day-by-day summary, shown behind a button under the week.
-  days?: DaySummary[];
 };
 
 export const CHAT_WEEKS: ChatWeek[] = [
